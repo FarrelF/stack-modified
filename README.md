@@ -8,13 +8,19 @@ Isi dari _Repostory_ ini adalah berkas-berkas yang telah dimodifikasi dari tema 
 Untuk memperolehnya, Anda bisa eksekusi perintah berikut untuk meng-kloningnya:
 
 ```bash
-$ git clone https://github.com/FarrelF/stack-modified.git
+git clone https://github.com/FarrelF/stack-modified.git
+```
+
+Atau, jika Anda ingin menggunakan SSH, maka Anda bisa gunakan perintah berikut untuk meng-kloningnya:
+
+```bash
+git clone git@github.com:FarrelF/stack-modified.git
 ```
 
 Atau, jika Anda menggunakan [GitHub CLI](https://cli.github.com), maka perintah untuk meng-kloningnya sebagai berikut:
 
 ```bash
-$ gh repo clone FarrelF/stack-modified
+gh repo clone FarrelF/stack-modified
 ```
 
 Setelah Anda meng-kloningnya, terutama dengan perintah di atas, berkas-berkas tersebut akan secara tersimpan di dalam Folder yang bernama `stack-modified` secara otomatis.
