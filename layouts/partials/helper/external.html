@@ -1,26 +1,42 @@
 {{- $List := index .Context.Site.Data.external .Namespace -}}
 {{- with $List -}}
     {{- range . -}}
+        {{- $downloadLocally := default false .downloadLocally -}}
         {{- if eq .type "script" -}}
+            {{- if eq $downloadLocally false -}}
             <script
                 src="{{ .src }}"
                 {{- with .integrity -}}
                 integrity="{{ . }}"
                 {{- end -}}
-                crossorigin="anonymous"
+                crossorigin="{{ default `anonymous` .crossorigin }}"
                 defer="{{ default false .defer }}"
                 async="{{ default false .async }}"
                 >
             </script>
+            {{- else -}}
+            {{- $file := resources.GetRemote (printf "%s" .src) | fingerprint "sha384" -}}
+            <script
+                async="{{ default false .async }}"
+                integrity="{{- $file.Data.Integrity -}}"
+                crossorigin="{{ default `anonymous` .crossorigin }}"
+                >{{- $file.Content | safeJS -}}
+            </script>
+            {{- end -}}
         {{- else if eq .type "style" -}}
+            {{- if eq $downloadLocally false -}}
             <link 
                 rel="stylesheet" 
                 href="{{ .src }}"
                 {{- with .integrity -}}
                 integrity="{{ . }}"
                 {{- end -}}
-                crossorigin="anonymous"
+                crossorigin="{{ default `anonymous` .crossorigin }}"
             >
+            {{- else -}}
+            {{- $file := resources.GetRemote (printf "%s" .src) | toCSS | minify -}}
+            <style type="text/css">{{- $file.Content | safeCSS -}}</style>
+            {{- end -}}
         {{- else -}}
             {{- errorf "Error: unknown external resource type: %s" .type -}}
         {{- end -}}
