@@ -42,7 +42,7 @@ KaTeX:
     defer: true
 
 Twemoji:
-  - src: https://cdn.statically.io/js/unpkg.com/twemoji@13.1.0/dist/twemoji.min.js
+  - src: https://cdn.statically.io/js/unpkg.com/twemoji@13.1.0/dist/twemoji.js
     integrity: sha256-Dg5SWeP/jqgF4MVmDGM29/RrFDMuPK+4KTnh2z2otvg= sha384-gPMUf7aEYa6qc3MgqTrigJqf4gzeO6v11iPCKv+AP2S4iWRWCoWyiR+Z7rWHM/hU sha512-bCQnYghGORM1nHpRLnCs2UJ4mBGgx1V9qstncNLQ4vejHwTHRh+b8C4T6uDjt37hxb4Lvbq678yZ/zJGJ/pDqQ==
     inline: true
     type: script
