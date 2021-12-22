@@ -16,11 +16,12 @@
                     <img src="{{ .src }}" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
                 {{ else }}
                     {{ $avatar := resources.Get (.src) }}
-                    
+
                     {{ if $avatar }}
-                        {{ $avatarSmall := $avatar.Resize "120x" }}
+                        {{- $avatarResolution := default `120` .resolution -}}
+                        {{ $avatarSmall := $avatar.Resize (printf "%dx" $avatarResolution) }}
                         {{- $avatarPermalink := printf "%s%s" $ImageURL $avatarSmall.RelPermalink -}}
-                        {{ $avatarSmallWebp := $avatar.Resize "120x webp" }}
+                        {{ $avatarSmallWebp := $avatar.Resize (printf "%dx webp" $avatarResolution) }}
                         {{- $avatarPermalinkWebp := printf "%s%s" $ImageURL $avatarSmallWebp.RelPermalink -}}
                         {{- if lt (len $avatarSmallWebp.Content) (len $avatarSmall.Content) -}}
                         <picture>
