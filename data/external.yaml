@@ -2,28 +2,28 @@ Vibrant:
   - src: https://cdn.statically.io/js/unpkg.com/node-vibrant@3.1.6/dist/vibrant.min.js
     integrity: sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM= sha384-xglTO/8Oa3fXW5xzsGkQbc0ofkFDkEwusRGEKsNk+DHlAeoH6cbU8Pu/1KhMAVqz sha512-SzKezyOOe19oOvjHkyAkQXCjZ3qmGtpl78ZkLEemazIvoh+kgDVDWYELe3giYBr+40LPqJDAolvCv3TVRSMIaA==
     type: script
-    downloadLocally: true
+    inline: true
     defer: true
 
 PhotoSwipe:
   - src: https://cdn.statically.io/gh/dimsemenov/PhotoSwipe/v4.1.3/dist/photoswipe.min.js
     integrity: sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo= sha384-jkeJ/ETDRD/P4Y3I3CQi1QIwrEJjR9GdAZV2/aqDwwgA5ldCNiExYJeBwKyQC/+q sha512-2R4VJGamBudpzC1NTaSkusXP7QkiUYvEKhpJAxeVCqLDsgW4OqtzorZGpulE3eEA7p++U0ZYmqBwO3m+R2hRjA==
     type: script
-    downloadLocally: true
+    inline: true
     defer: true
 
   - src: https://cdn.statically.io/gh/dimsemenov/PhotoSwipe/v4.1.3/dist/photoswipe-ui-default.min.js
     integrity: sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU= sha384-HotcxRWS6/oszHPwknjGnd066fV8+ycnO5TXDcOscFWvTtaiCtEEv+9s5Qrn1iJD sha512-SxO0cwfxj/QhgX1SgpmUr0U2l5304ezGVhc0AO2YwOQ/C8O67ynyTorMKGjVv1fJnPQgjdxRz6x70MY9r0sKtQ==
     type: script
-    downloadLocally: true
+    inline: true
     defer: true
 
   - src: https://cdn.statically.io/gh/dimsemenov/PhotoSwipe/v4.1.3/dist/default-skin/default-skin.min.css
-    downloadLocally: false
+    inline: false
     type: style
 
   - src: https://cdn.statically.io/gh/dimsemenov/PhotoSwipe/v4.1.3/dist/photoswipe.min.css
-    downloadLocally: true
+    inline: true
     type: style
 
 KaTeX:
@@ -44,6 +44,6 @@ KaTeX:
 Twemoji:
   - src: https://cdn.statically.io/js/unpkg.com/twemoji@13.1.0/dist/twemoji.min.js
     integrity: sha256-Dg5SWeP/jqgF4MVmDGM29/RrFDMuPK+4KTnh2z2otvg= sha384-gPMUf7aEYa6qc3MgqTrigJqf4gzeO6v11iPCKv+AP2S4iWRWCoWyiR+Z7rWHM/hU sha512-bCQnYghGORM1nHpRLnCs2UJ4mBGgx1V9qstncNLQ4vejHwTHRh+b8C4T6uDjt37hxb4Lvbq678yZ/zJGJ/pDqQ==
-    downloadLocally: true
+    inline: true
     type: script
     async: true

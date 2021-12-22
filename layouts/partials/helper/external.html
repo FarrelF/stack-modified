@@ -1,32 +1,38 @@
 {{- $List := index .Context.Site.Data.external .Namespace -}}
 {{- with $List -}}
     {{- range . -}}
-        {{- $downloadLocally := default false .downloadLocally -}}
+        {{- $inline := default false .inline -}}
         {{- if eq .type "script" -}}
-            {{- if eq $downloadLocally false -}}
+            {{- if eq $inline false -}}
             <script
                 src="{{ .src }}"
                 {{- with .integrity -}}
                 integrity="{{ . }}"
                 {{- end -}}
                 crossorigin="{{ default `anonymous` .crossorigin }}"
-                defer="{{ default false .defer }}"
-                async="{{ default false .async }}"
+                {{- if eq .defer true -}}
+                defer
+                {{- end -}}
+                {{- if eq .async true -}}
+                async
+                {{- end -}}
                 >
             </script>
             {{- else -}}
             {{- $file := resources.GetRemote (printf "%s" .src) | fingerprint "sha384" -}}
             <script
-                async="{{ default false .async }}"
+                type="application/javascript"
                 integrity="{{- $file.Data.Integrity -}}"
                 crossorigin="{{ default `anonymous` .crossorigin }}"
-                >{{- $file.Content | safeJS -}}
+                >
+                {{- $file.Content | safeJS -}}
             </script>
             {{- end -}}
         {{- else if eq .type "style" -}}
-            {{- if eq $downloadLocally false -}}
+            {{- if eq $inline false -}}
             <link 
-                rel="stylesheet" 
+                rel="stylesheet"
+                type="text/css"
                 href="{{ .src }}"
                 {{- with .integrity -}}
                 integrity="{{ . }}"
