@@ -36,10 +36,6 @@ Serta, jika ada berkas yang ingin Anda tambahkan sendiri, silahkan tambahkan itu
 
 Jika Anda memasukkan semua isi dari tema aslinya, yang mana tidak diperlukan semuanya, maka dengan senang hati saya menolak _Pull Request_ dari Anda. Harap maklum 😊
 
-Satu hal lagi, jika Anda ingin melakukan _Pull Request_, pastikan bahwa selalu tertuju ke _Branch_ `dev`, bukan `main`. Karena _Branch_ `main` hanya digunakan untuk lingkungan produksi, yang mana butuh sedikit kestabilan, sedangkan `dev` untuk pengembangan.
-
-Jika diluar itu, maka _Pull Request_ Anda akan saya tolak, kecuali jika Anda memindahkan tujuannya.
-
 ## Lisensi
 Karena ini merupakan tema turunan, maka lisensi yang saya gunakan sama seperti Tema Aslinya, yakni di bawah lisensi "GNU General Public License v3.0" atau "GNU GPLv3".
 
