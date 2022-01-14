@@ -23,7 +23,7 @@
             <script
                 type="application/javascript"
                 integrity="{{- $file.Data.Integrity -}}"
-                crossorigin="{{ default `anonymous` .crossorigin }}"
+                crossorigin="{{- default `anonymous` .crossorigin -}}"
                 >
                 {{- $file.Content | safeJS -}}
             </script>

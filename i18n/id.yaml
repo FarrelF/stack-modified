@@ -45,6 +45,12 @@ article:
     featuredImageOf:
         other: Gambar Unggulan dari Pos
 
+    PhotoSwipe:
+        close: Tutup (Esc)
+        share: Bagikan
+        fullscreen: Alihkan ke Layar Penuh
+        zoom: Perbesar/perkecil
+
 widget:
     archives:
         title:
