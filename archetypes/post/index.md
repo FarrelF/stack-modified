@@ -14,5 +14,3 @@ readMore: true
 DescriptionSEO:
 Description:
 ---
-## Daftar Isi
-{{< toc >}}

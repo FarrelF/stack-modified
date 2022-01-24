@@ -1,3 +1,4 @@
+{{- $ArticleInfo := dict "Title" .Title "Slug" .Slug "RelPermalink" .RelPermalink "Date" .Date -}}
 <article>
     <a href="{{ .RelPermalink }}">
         <div class="article-details">
@@ -58,16 +59,18 @@
                                 <img src="{{ $Permalink }}" 
                                 width="{{ $Width }}" 
                                 height="{{ $Height }}" 
+                                alt="{{- default (printf "Featured image of post %s" .Title) (T "article.featuredImageOf" $ArticleInfo) -}}"
                                 loading="lazy">
                     </picture>
                     {{- else -}}
                     <img src="{{ $Permalink }}" 
                         width="{{ $Width }}" 
                         height="{{ $Height }}" 
+                        alt="{{- default (printf "Featured image of post %s" .Title) (T "article.featuredImageOf" $ArticleInfo) -}}" 
                         loading="lazy">
                     {{- end -}}
                 {{ else }}
-                    <img src="{{ $image.permalink }}" loading="lazy" alt="Featured image of post {{ .Title }}" />
+                    <img src="{{ $image.permalink }}" loading="lazy" alt="{{- default (printf "Featured image of post %s" .Title) (T "article.featuredImageOf" $ArticleInfo) -}}" />
                 {{ end }}
             </div>
         {{ end }}

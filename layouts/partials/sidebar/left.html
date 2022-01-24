@@ -12,6 +12,7 @@
     <header class="site-info">
         {{ with .Site.Params.sidebar.avatar }}
             <figure class="site-avatar">
+                <a href="{{ .Site.BaseURL | relLangURL }}">
                 {{ if not .local }}
                     <img src="{{ .src }}" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
                 {{ else }}
@@ -41,6 +42,7 @@
                         {{ errorf "Failed loading avatar from %q" . }}
                     {{ end }}
                 {{ end }}
+                </a>
 
                 {{ with $.Site.Params.sidebar.emoji }}
                     <span class="emoji">{{ . }}</span>

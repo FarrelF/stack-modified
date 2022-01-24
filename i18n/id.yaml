@@ -43,13 +43,15 @@ article:
         other: "Waktu Membaca: {{ .Count }} menit"
 
     featuredImageOf:
-        other: Gambar Unggulan dari Pos
+        other: Gambar Unggulan dari Pos {{ .Title }}
 
     PhotoSwipe:
         close: Tutup (Esc)
         share: Bagikan
         fullscreen: Alihkan ke Layar Penuh
         zoom: Perbesar/perkecil
+        previous: Sebelumnya (panah kiri)
+        next: Selanjutnya (panah kanan)
 
 widget:
     archives:

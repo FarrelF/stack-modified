@@ -1,6 +1,7 @@
 <header class="article-header">
     {{- $image := partialCached "helper/image" (dict "Context" . "Type" "article") .RelPermalink "article" -}}
     {{- $webp := 0 -}}
+    {{- $ArticleInfo := dict "Title" .Title "Slug" .Slug "RelPermalink" .RelPermalink "Date" .Date -}}
     {{ if $image.exists }}
         <div class="article-image">
             <a href="{{ .RelPermalink }}">
@@ -96,7 +97,7 @@
                             {{ with $Height }}height="{{ . }}"{{ end }}
                             {{ with $Srcset }}srcset="{{ . }}"{{ end }}
                             loading="lazy"
-                            alt="{{ with T "article.featuredImageOf" }}{{ . }} {{ else }}Featured image of post {{ end }}{{ .Title }}" />
+                            alt="{{- default (printf "Featured image of post %s" .Title) (T "article.featuredImageOf" $ArticleInfo) -}}" />
                     </picture>
                     {{- else -}}
                     <img src="{{ $Permalink }}"
@@ -104,10 +105,10 @@
                         width="{{ $Width }}" 
                         height="{{ $Height }}" 
                         loading="lazy"
-                        alt="{{ with T "article.featuredImageOf" }}{{ . }} {{ else }}Featured image of post {{ end }}{{ .Title }}" />
+                        alt="{{- default (printf "Featured image of post %s" .Title) (T "article.featuredImageOf" $ArticleInfo) -}}" />
                     {{- end -}}
                 {{ else }}
-                    <img src="{{ $image.permalink }}" loading="lazy" alt="{{ with T "article.featuredImageOf" }}{{ . }} {{ else }}Featured image of post {{ end }}{{ .Title }}" />
+                    <img src="{{ $image.permalink }}" loading="lazy" alt="{{- default (printf "Featured image of post %s" .Title) (T "article.featuredImageOf" $ArticleInfo) -}}" />
                 {{ end }}
             </a>
         </div>

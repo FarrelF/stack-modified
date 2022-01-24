@@ -2,15 +2,29 @@
 
 {{- $Permalink := "" -}}
 {{- $script := "" -}}
+{{- $customScript := "" -}}
+{{- $customOpts := "" -}}
 {{- $opts := dict "targetPath" "main.js" -}}
 {{- if ne hugo.IsProduction false -}}
     {{- $script = resources.Get "ts/main.ts" | js.Build $opts | minify | fingerprint "sha384" -}}
+    {{- with resources.Get "ts/custom.ts" -}}
+        {{/* Place your custom script in HUGO_SITE_FOLDER/assets/ts/custom.ts */}}
+        {{- $customOpts = dict "targetPath" "custom.js" -}}
+        {{- $customScript = . | js.Build $customOpts | minify | fingerprint "sha384" -}}
+        {{- $script = slice $script $customScript | resources.Concat "main.js" | minify | fingerprint "sha384" -}}
+    {{- end -}}
     {{- $Permalink = $script.RelPermalink -}}
     {{- if .Site.Params.CDN.JS.URL -}}
         {{- $Permalink = printf "%s%s" $.Site.Params.CDN.JS.URL $script.RelPermalink -}}
     {{- end -}}
 {{- else -}}
     {{- $script = resources.Get "ts/main.ts" | js.Build $opts | fingerprint "sha384" -}}
+    {{- with resources.Get "ts/custom.ts" -}}
+        {{/* Place your custom script in HUGO_SITE_FOLDER/assets/ts/custom.ts */}}
+        {{- $customOpts = dict "targetPath" "custom.js" -}}
+        {{- $customScript = . | js.Build $customOpts | minify | fingerprint "sha384" -}}
+        {{- $script = slice $script $customScript | resources.Concat "main.js" | minify | fingerprint "sha384" -}}
+    {{- end -}}
     {{- $Permalink = $script.RelPermalink -}}
 {{- end -}}
 
