@@ -6,24 +6,24 @@
 {{- $customOpts := "" -}}
 {{- $opts := dict "targetPath" "main.js" -}}
 {{- if ne hugo.IsProduction false -}}
-    {{- $script = resources.Get "ts/main.ts" | js.Build $opts | minify | fingerprint "sha384" -}}
+    {{- $script = resources.Get "ts/main.ts" | js.Build $opts | minify | fingerprint (default "sha512" $.Site.Params.script.cryptoHash) -}}
     {{- with resources.Get "ts/custom.ts" -}}
         {{/* Place your custom script in HUGO_SITE_FOLDER/assets/ts/custom.ts */}}
         {{- $customOpts = dict "targetPath" "custom.js" -}}
-        {{- $customScript = . | js.Build $customOpts | minify | fingerprint "sha384" -}}
-        {{- $script = slice $script $customScript | resources.Concat "main.js" | minify | fingerprint "sha384" -}}
+        {{- $customScript = . | js.Build $customOpts | minify -}}
+        {{- $script = slice $script $customScript | resources.Concat "main.js" | minify | fingerprint (default "sha512" $.Site.Params.script.cryptoHash) -}}
     {{- end -}}
     {{- $Permalink = $script.RelPermalink -}}
     {{- if .Site.Params.CDN.JS.URL -}}
         {{- $Permalink = printf "%s%s" $.Site.Params.CDN.JS.URL $script.RelPermalink -}}
     {{- end -}}
 {{- else -}}
-    {{- $script = resources.Get "ts/main.ts" | js.Build $opts | fingerprint "sha384" -}}
+    {{- $script = resources.Get "ts/main.ts" | js.Build $opts | fingerprint (default "sha512" $.Site.Params.script.cryptoHash) -}}
     {{- with resources.Get "ts/custom.ts" -}}
         {{/* Place your custom script in HUGO_SITE_FOLDER/assets/ts/custom.ts */}}
         {{- $customOpts = dict "targetPath" "custom.js" -}}
-        {{- $customScript = . | js.Build $customOpts | minify | fingerprint "sha384" -}}
-        {{- $script = slice $script $customScript | resources.Concat "main.js" | minify | fingerprint "sha384" -}}
+        {{- $customScript = . | js.Build $customOpts -}}
+        {{- $script = slice $script $customScript | resources.Concat "main.js" | fingerprint (default "sha512" $.Site.Params.script.cryptoHash) -}}
     {{- end -}}
     {{- $Permalink = $script.RelPermalink -}}
 {{- end -}}
