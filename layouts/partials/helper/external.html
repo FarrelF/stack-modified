@@ -19,7 +19,7 @@
                 >
             </script>
             {{- else -}}
-            {{- $file := resources.GetRemote (printf "%s" .src) | fingerprint (default "sha512" $.Site.Params.script.cryptoHash) -}}
+            {{- $file := resources.GetRemote (printf "%s" .src) | fingerprint (default "sha512" $.Context.Site.Params.script.cryptoHash) -}}
             <script
                 type="application/javascript"
                 integrity="{{- $file.Data.Integrity -}}"
