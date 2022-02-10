@@ -34,15 +34,17 @@
 			{{- $Permalink = printf "%s" $image.RelPermalink -}}
 		{{- end -}}
 		{{- if (default true .Page.Site.Params.imageProcessing.content.enabled) -}}
-			{{- $small := $image.Resize `480x` -}}
-			{{- $big := $image.Resize `1024x` -}}
-			{{- $Srcset = printf `%s%s 480w, %s%s 1024w` $ImageURL $small.RelPermalink $ImageURL $big.RelPermalink -}}
+			{{- $small := $image.Resize `480x q50` -}}
+			{{- $big := $image.Resize `768x q50` -}}
+			{{- $Srcset = printf `%s%s 480w, %s%s 768w` $ImageURL $small.RelPermalink $ImageURL $big.RelPermalink -}}
+			{{/*
 			{{- $smallWebp := $image.Resize `480x webp` -}}
-			{{- $bigWebp := $image.Resize `1024x webp` -}}
-			{{- $SrcsetWebp = printf `%s%s 480w, %s%s 1024w` $ImageURL $smallWebp.RelPermalink $ImageURL $bigWebp.RelPermalink -}}
+			{{- $bigWebp := $image.Resize `768x webp` -}}
+			{{- $SrcsetWebp = printf `%s%s 480w, %s%s 768w` $ImageURL $smallWebp.RelPermalink $ImageURL $bigWebp.RelPermalink -}}
 			{{- if lt (len $bigWebp.Content) (len $big.Content) -}}
 				{{- $webp = 1 -}}
 			{{- end -}}
+			*/}}
 		{{- end -}}
 	{{- else -}}
 		{{- $image = $image | resources.Fingerprint "sha256" -}}
@@ -53,7 +55,7 @@
 		{{- end -}}
 	{{- end -}}
 {{- end -}}
-
+{{/*
 <figure 
 	{{ if $galleryImage }}
 		class="gallery-image" 
@@ -91,3 +93,18 @@
 	<figcaption>{{ . | markdownify }}</figcaption>
 	{{ end }}
 </figure>
+*/}}
+<img src="{{ $Permalink | safeURL }}"
+	{{ with $Width }}width="{{ . }}"{{ end }}
+	{{ with $Height }}height="{{ . }}"{{ end }}
+	{{ with $Srcset }}srcset="{{ . }}"{{ end }}
+	loading="lazy"
+	{{ with $alt }}
+		alt="{{ . }}"
+	{{ end }}
+	{{ if $galleryImage }}
+		class="gallery-image" 
+		data-flex-grow="{{ div (mul $image.Width 100) $image.Height }}"
+		data-flex-basis="{{ div (mul $image.Width 240) $image.Height }}px"
+	{{ end }}
+>
