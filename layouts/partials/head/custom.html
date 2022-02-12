@@ -9,6 +9,34 @@
     {{- end -}}
 {{- end -}}
 
+{{- with .Params.custom.css -}}
+    {{- $CustomCSS := $.Page.Resources.GetMatch (printf "%s" .path) -}}
+    {{- $MinifyCustomCSS := default true (.minify) -}}
+    {{- if eq $MinifyCustomCSS true -}}
+        {{- $CustomCSS = $CustomCSS | resources.Minify -}}
+    {{- end -}}
+    {{- $CustomCSS = $CustomCSS | resources.Fingerprint (default "sha512" .hash) -}}
+    {{- $CustomCSSPermalink := $CustomCSS.RelPermalink -}}
+    {{- if and ($.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) -}}
+        {{- $CustomCSSPermalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $CustomCSS.RelPermalink -}}
+    {{- end -}}
+    <link rel="stylesheet" href="{{- $CustomCSSPermalink -}}" integrity="{{- $CustomCSS.Data.Integrity -}}"{{- if hugo.IsProduction -}} crossorigin="anonymous"{{- end -}}>
+{{- end -}}
+
+{{- with .Params.custom.scss -}}
+    {{- $CustomSCSS := $.Page.Resources.GetMatch (printf "%s" .path) | resources.ToCSS -}}
+    {{- $MinifyCustomSCSS := default true (.minify) -}}
+    {{- if eq $MinifyCustomSCSS true -}}
+        {{- $CustomSCSS = $CustomSCSS | resources.Minify -}}
+    {{- end -}}
+    {{- $CustomSCSS = $CustomSCSS | resources.Fingerprint (default "sha512" .hash) -}}
+    {{- $CustomSCSSPermalink := $CustomSCSS.RelPermalink -}}
+    {{ if and ($.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) }}
+        {{ $CustomSCSSPermalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $CustomSCSS.RelPermalink }}
+    {{ end }}
+    <link rel="stylesheet" href="{{- $CustomSCSSPermalink -}}" integrity="{{- $CustomSCSS.Data.Integrity -}}"{{- if hugo.IsProduction -}} crossorigin="anonymous"{{- end -}}>
+{{- end -}}
+
 {{- $PermalinkFonts := "" -}}
 {{- if and (.Site.Params.CDN.Fonts.URL) (eq hugo.IsProduction true) -}}
     {{- $PermalinkFonts = .Site.Params.CDN.Fonts.URL -}}

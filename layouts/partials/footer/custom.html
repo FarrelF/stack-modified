@@ -2,7 +2,7 @@
     {{- partial "helper/external" (dict "Context" . "Namespace" "Twemoji") -}}
     {{- $Twemoji := .Site.Params.Twemoji -}}
 {{ with $Twemoji.Options }}
-<script>
+<script type="text/javascript">
     window.onload = function() {
         twemoji.parse(document.body, 
             {
@@ -17,3 +17,63 @@
 </script>
 {{ end }}
 {{ end }}
+
+{{- with .Params.custom.js -}}
+    {{- $CustomJS := $.Page.Resources.GetMatch (printf "%s" .path) -}}
+    {{- $MinifyCustomJS := default true (.minify) -}}
+    {{- $CustomJSAsync := default true (.async) -}}
+    {{- $CustomJSDefer := default false (.defer) -}}
+    {{- if eq $MinifyCustomJS true -}}
+        {{- $CustomJS = $CustomJS | resources.Minify -}}
+    {{- end -}}
+    {{- $CustomJS = $CustomJS | resources.Fingerprint (default "sha512" .hash) -}}
+    {{- $CustomJSPermalink := $CustomJS.RelPermalink -}}
+    {{- if and ($.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) -}}
+        {{- $CustomJSPermalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $CustomJS.RelPermalink -}}
+    {{- end -}}
+    <script 
+        type="text/javascript"
+        src="{{- $CustomJSPermalink -}}"
+        integrity="{{- $CustomJS.Data.Integrity -}}"
+        {{- if eq hugo.IsProduction true -}}
+        crossorigin="anonymous"
+        {{- end -}}
+        {{- if eq $CustomJSAsync true -}}
+        async
+        {{- end -}}
+        {{- if eq $CustomJSDefer true -}}
+        defer
+        {{- end -}}
+        >
+    </script>
+{{- end -}}
+
+{{- with .Params.custom.ts -}}
+    {{- $CustomTS := $.Page.Resources.GetMatch (printf "%s" .path) | js.Build -}}
+    {{- $MinifyCustomTS := default true (.minify) -}}
+    {{- $CustomTSAsync := default true (.async) -}}
+    {{- $CustomTSDefer := default false (.defer) -}}
+    {{- if eq $MinifyCustomTS true -}}
+        {{- $CustomTS = $CustomTS | resources.Minify -}}
+    {{- end -}}
+    {{- $CustomTS = $CustomTS | resources.Fingerprint (default "sha512" .hash) -}}
+    {{- $CustomTSPermalink := $CustomTS.RelPermalink -}}
+    {{- if and ($.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) -}}
+        {{- $CustomTSPermalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $CustomTS.RelPermalink -}}
+    {{- end -}}
+    <script 
+        type="text/javascript"
+        src="{{- $CustomTSPermalink -}}"
+        integrity="{{- $CustomTS.Data.Integrity -}}"
+        {{- if eq hugo.IsProduction true -}}
+        crossorigin="anonymous"
+        {{- end -}}
+        {{- if eq $CustomTSAsync true -}}
+        async
+        {{- end -}}
+        {{- if eq $CustomTSDefer true -}}
+        defer
+        {{- end -}}
+        >
+    </script>
+{{- end -}}
