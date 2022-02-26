@@ -22,6 +22,12 @@ th, td {
     }
 }
 
+table {
+    &.table-info {
+        margin: 1.5em 0;
+    }
+}
+
 img {
     &.emoji {
         width: 1em;
