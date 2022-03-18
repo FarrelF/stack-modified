@@ -1,17 +1,19 @@
 {{ define "body-class" }}template-archives{{ end }}
 {{ define "main" }}
-    {{- $taxonomy := $.Site.GetPage "taxonomyTerm" "categories" -}}
-    {{- $terms := $taxonomy.Pages -}}
-    {{ if $terms }}
-    <h2 class="section-title">{{ T "taxonomy.categories" }}</h2>
-    <div class="subsection-list">
-        <div class="article-list--tile">
-            {{ range $terms }}
-                {{ partial "article-list/tile" (dict "context" . "size" (printf "250x150 %s" .Params.image_anchor) "Type" "taxonomy") }}
-            {{ end }}
+    <header>
+        {{- $taxonomy := $.Site.GetPage "taxonomyTerm" "categories" -}}
+        {{- $terms := $taxonomy.Pages -}}
+        {{ if $terms }}
+        <h2 class="section-title">{{ T "taxonomy.categories" }}</h2>
+        <div class="subsection-list">
+            <div class="article-list--tile">
+                {{ range $terms }}
+                    {{ partial "article-list/tile" (dict "context" . "size" (printf "250x150 %s" .Params.image_anchor) "Type" "taxonomy") }}
+                {{ end }}
+            </div>
         </div>
-    </div>
-    {{ end }}
+        {{ end }}
+    </header>
 
     {{ $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections }}
     {{ $notHidden := where .Site.RegularPages "Params.hidden" "!=" true }}

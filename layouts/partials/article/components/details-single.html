@@ -9,22 +9,23 @@
     </header>
     {{ end }}
 
-    <h2 class="article-title">
-        <a href="{{ .RelPermalink }}">
-            {{- .Title -}}
-        </a>
-    </h2>
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="{{ .RelPermalink }}">
+                {{- .Title -}}
+            </a>
+        </h2>
 
-    {{ if and (eq .Params.enableSummary true) (.Params.Summary) }}
-        <h3 class="article-subtitle">
-            {{ .Params.Summary | $.Page.RenderString | emojify }}
-        </h3>
-    {{ else if and (eq .Params.enableSummary true) (.Summary) }}
-        <h3 class="article-subtitle">
-            {{ .Summary | $.Page.RenderString | emojify }}
-        </h3>
-    {{ end }}
-    
+        {{ if and (eq .Params.enableSummary true) (.Params.Summary) }}
+            <h3 class="article-subtitle">
+                {{ .Params.Summary | $.Page.RenderString | emojify }}
+            </h3>
+        {{ else if and (eq .Params.enableSummary true) (.Summary) }}
+            <h3 class="article-subtitle">
+                {{ .Summary | $.Page.RenderString | emojify }}
+            </h3>
+        {{ end }}
+    </div>
 
     {{- if not .Date.IsZero -}}
     <footer class="article-time">
@@ -38,4 +39,15 @@
         </time>
     </footer>
     {{- end -}}
+
+    {{ if .IsTranslated }}
+        <footer class="article-translations">
+            {{ partial "helper/icon" "language" }}
+            <div>
+                {{ range .Translations }}
+                    <a href="{{ .Permalink }}" class="link">{{ .Language.LanguageName }}</a>
+                {{ end }}
+            </div>
+        </footer>
+    {{ end }}
 </div>

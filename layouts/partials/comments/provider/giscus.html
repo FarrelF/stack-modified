@@ -20,7 +20,7 @@
                 s.setAttribute('data-category', '{{- .category -}}');
                 s.setAttribute('data-category-id', '{{- .categoryID -}}');
                 s.setAttribute('data-reactions-enabled', '{{- default 1 .reactionsEnabled -}}');
-                s.setAttribute('data-lang', '{{- default `en` .lang -}}');
+                s.setAttribute('data-lang', '{{- default (printf "%s" $.Site.Language.Lang) .lang -}}');
                 s.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
                 s.setAttribute('data-theme', '{{- default `light` .lightTheme -}}');
                 (d.getElementById('giscus_thread')).appendChild(s);
@@ -52,7 +52,7 @@
             s.setAttribute('data-category', '{{- .category -}}');
             s.setAttribute('data-category-id', '{{- .categoryID -}}');
             s.setAttribute('data-reactions-enabled', '{{- default 1 .reactionsEnabled -}}');
-            s.setAttribute('data-lang', '{{- default `en` .lang -}}');
+            s.setAttribute('data-lang', '{{- default (printf "%s" $.Site.Language.Lang) .lang -}}');
             s.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
             s.setAttribute('data-theme', '{{- default `light` .lightTheme -}}');
             giscus_hook.appendChild(s);
@@ -72,36 +72,36 @@
 {{- end -}}
 <script>
     function setGiscusTheme(theme) {
-        let giscus = document.querySelector('iframe.giscus-frame');
+        let giscus = document.querySelector("iframe.giscus-frame");
         if (giscus) {
             giscus.contentWindow.postMessage(
-                { 
+                {
                     giscus: {
-                        setConfig: { 
-                            theme: theme 
-                        }
-                    }
+                        setConfig: {
+                            theme: theme,
+                        },
+                    },
                 },
                 "https://giscus.app"
             );
-        };
-    };
+        }
+    }
 
-    (function(){
-        addEventListener('message', (e) => {
-            if (event.origin !== 'https://giscus.app') return;
-            handler()
+    (function () {
+        addEventListener("message", (e) => {
+            if (event.origin !== "https://giscus.app") return;
+            handler();
         });
-        window.addEventListener('onColorSchemeChange', handler);
+        window.addEventListener("onColorSchemeChange", handler);
 
         function handler() {
             if (document.documentElement.dataset.scheme === "light") {
                 setGiscusTheme('{{- default "light" .lightTheme -}}');
             } else {
                 setGiscusTheme('{{- default "dark_dimmed" .darkTheme -}}');
-            };
-        };
-    }());
+            }
+        }
+    })();
 </script>
 {{- end -}}
 
