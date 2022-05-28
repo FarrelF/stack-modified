@@ -96,7 +96,6 @@
                             {{ with $Width }}width="{{ . }}"{{ end }}
                             {{ with $Height }}height="{{ . }}"{{ end }}
                             {{ with $Srcset }}srcset="{{ . }}"{{ end }}
-                            loading="lazy"
                             alt="{{- default (printf "Featured image of post %s" .Title) (T "article.featuredImageOf" $ArticleInfo) -}}" />
                     </picture>
                     {{- else -}}
@@ -104,11 +103,10 @@
                         {{ with $Srcset }}srcset="{{ . }}"{{ end }}
                         width="{{ $Width }}" 
                         height="{{ $Height }}" 
-                        loading="lazy"
                         alt="{{- default (printf "Featured image of post %s" .Title) (T "article.featuredImageOf" $ArticleInfo) -}}" />
                     {{- end -}}
                 {{ else }}
-                    <img src="{{ $image.permalink }}" loading="lazy" alt="{{- default (printf "Featured image of post %s" .Title) (T "article.featuredImageOf" $ArticleInfo) -}}" />
+                    <img src="{{ $image.permalink }}" alt="{{- default (printf "Featured image of post %s" .Title) (T "article.featuredImageOf" $ArticleInfo) -}}" />
                 {{ end }}
             </a>
         </div>
