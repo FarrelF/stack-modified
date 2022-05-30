@@ -41,8 +41,8 @@
 				{{- $big = $image.Resize `500x q50` -}}
 				{{- $Srcset = printf `%s%s 400w, %s%s 500w` $ImageURL $small.RelPermalink $ImageURL $big.RelPermalink -}}
 			{{- else -}}
-				{{- $small := $image.Resize `480x q50` -}}
-				{{- $big := $image.Resize `768x q50` -}}
+				{{- $small = $image.Resize `480x q50` -}}
+				{{- $big = $image.Resize `768x q50` -}}
 				{{- $Srcset = printf `%s%s 480w, %s%s 768w` $ImageURL $small.RelPermalink $ImageURL $big.RelPermalink -}}
 			{{- end -}}
 			{{/*
