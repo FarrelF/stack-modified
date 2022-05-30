@@ -34,9 +34,17 @@
 			{{- $Permalink = printf "%s" $image.RelPermalink -}}
 		{{- end -}}
 		{{- if (default true .Page.Site.Params.imageProcessing.content.enabled) -}}
-			{{- $small := $image.Resize `480x q50` -}}
-			{{- $big := $image.Resize `768x q50` -}}
-			{{- $Srcset = printf `%s%s 480w, %s%s 768w` $ImageURL $small.RelPermalink $ImageURL $big.RelPermalink -}}
+			{{- $small := "" -}}
+			{{- $big := "" -}}
+			{{- if lt $Width "768" -}}
+				{{- $small = $image.Resize `400x q50` -}}
+				{{- $big = $image.Resize `500x q50` -}}
+				{{- $Srcset = printf `%s%s 400w, %s%s 500w` $ImageURL $small.RelPermalink $ImageURL $big.RelPermalink -}}
+			{{- else -}}
+				{{- $small := $image.Resize `480x q50` -}}
+				{{- $big := $image.Resize `768x q50` -}}
+				{{- $Srcset = printf `%s%s 480w, %s%s 768w` $ImageURL $small.RelPermalink $ImageURL $big.RelPermalink -}}
+			{{- end -}}
 			{{/*
 			{{- $smallWebp := $image.Resize `480x webp` -}}
 			{{- $bigWebp := $image.Resize `768x webp` -}}
