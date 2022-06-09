@@ -31,9 +31,9 @@
     {{- end -}}
     {{- $CustomSCSS = $CustomSCSS | resources.Fingerprint (default "sha512" .hash) -}}
     {{- $CustomSCSSPermalink := $CustomSCSS.RelPermalink -}}
-    {{ if and ($.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) }}
-        {{ $CustomSCSSPermalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $CustomSCSS.RelPermalink }}
-    {{ end }}
+    {{- if and ($.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) -}}
+        {{- $CustomSCSSPermalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $CustomSCSS.RelPermalink -}}
+    {{- end -}}
     <link rel="stylesheet" href="{{- $CustomSCSSPermalink -}}" integrity="{{- $CustomSCSS.Data.Integrity -}}"{{- if hugo.IsProduction -}} crossorigin="anonymous"{{- end -}}>
 {{- end -}}
 

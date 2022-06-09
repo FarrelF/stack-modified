@@ -23,7 +23,7 @@
 
                     {{- $Permalink = printf "%s%s" $ImageURL $imageRaw.RelPermalink -}}
 
-                    {{- if (default true .Site.Params.imageProcessing.cover.enabled) -}}
+                    {{- if eq .context.Site.Params.imageProcessing.cover.enabled true -}}
                         {{- $thumbnail := $imageRaw.Fill .size -}}
                         {{- $Width = $thumbnail.Width -}}
                         {{- $Height = $thumbnail.Height -}}
