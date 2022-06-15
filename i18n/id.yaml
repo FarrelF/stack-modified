@@ -1,50 +1,27 @@
-toggleMenu:
-    other: Tampilkan Menu
-
-darkMode:
-    other: Mode Gelap
+toggleMenu: Tampilkan Menu
+darkMode: Mode Gelap
 
 list:
+    section: Bagian-bagian
+    subsection: Subbagian
     page:
-        one: "{{ .Count }} halaman"
+        one: "Satu halaman"
         other: "{{ .Count }} halaman"
-
-    section:
-        other: Bagian-bagian
-
-    subsection:
-        one: Subbagian
-        other: Subbagian
 
 taxonomy:
     categories: Kategori
 
 article:
-    back:
-        other: Kembali
-
-    tableOfContents:
-        other: Daftar Isi
-
-    relatedContents:
-        other: Konten terkait
-
-    lastUpdatedOn:
-        other: Terakhir diperbarui pada {{ .Weekday }}, {{ .Day }} {{ .Month }} {{ .Year }}, pukul {{ .Time }} WIB
-
-    lastUpdatedGit:
-        other: Pembaruan pada Artikel/Laman ini mengikuti Commit <a class="link" href="https://github.com/FarrelF/Blog/commit/{{ .Hash }}" target="_blank" rel="noopener">{{ .AbvHash }}</a> di GitHub
-
-    readMore:
-        other: Baca lebih lanjut >
-
+    back: Kembali
+    tableOfContents: Daftar Isi
+    relatedContents: Konten terkait
+    lastUpdatedOn: Terakhir diperbarui pada {{ .Weekday }}, {{ .Day }} {{ .Month }} {{ .Year }}, pukul {{ .Time }} WIB
+    lastUpdatedGit: Pembaruan pada Artikel/Laman ini mengikuti Commit <a class="link" href="https://github.com/FarrelF/Blog/commit/{{ .Hash }}" target="_blank" rel="noopener">{{ .AbvHash }}</a> di GitHub
+    readMore: Baca lebih lanjut >
+    featuredImageOf: Gambar Unggulan dari Pos {{ .Title }}
     readingTime:
-        one: "Waktu Membaca: {{ .Count }} menit"
+        one: "Waktu Membaca: Satu menit atau kurang"
         other: "Waktu Membaca: {{ .Count }} menit"
-
-    featuredImageOf:
-        other: Gambar Unggulan dari Pos {{ .Title }}
-
     PhotoSwipe:
         close: Tutup (Esc)
         share: Bagikan
@@ -52,36 +29,24 @@ article:
         zoom: Perbesar/perkecil
         previous: Sebelumnya (panah kiri)
         next: Selanjutnya (panah kanan)
+    codeblock:
+        copy: Salin
+        copied: Tersalin!
 
 widget:
     archives:
-        title:
-            other: Arsip
-
-        more:
-            other: Lebih
-
+        title: Arsip
+        more: Lebih
     tagCloud:
-        title:
-            other: Kumpulan Tag
-
+        title: Kumpulan Tag
     categoriesCloud:
-        title:
-            other: Kategori
+        title: Kategori
 
 search:
-    title:
-        other: Cari
-
-    placeholder:
-        other: Ketik sesuatu...
-
-    resultTitle:
-        other: "#PAGES_COUNT halaman (#TIME_SECONDS detik)"
+    title: Cari
+    placeholder: Ketik sesuatu...
+    resultTitle: "#PAGES_COUNT halaman (#TIME_SECONDS detik)"
 
 footer:
-    builtWith:
-        other: Dibangun dengan {{ .Generator }}
-
-    designedBy:
-        other: Tema {{ .Theme }} dirancang oleh {{ .DesignedBy }}
+    builtWith: Dibangun dengan {{ .Generator }}
+    designedBy: Tema {{ .Theme }} dirancang oleh {{ .DesignedBy }}
