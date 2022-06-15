@@ -14,7 +14,7 @@ taxonomy:
 article:
     back: Kembali
     tableOfContents: Daftar Isi
-    relatedContents: Konten terkait
+    relatedContent: Konten terkait
     lastUpdatedOn: Terakhir diperbarui pada {{ .Weekday }}, {{ .Day }} {{ .Month }} {{ .Year }}, pukul {{ .Time }} WIB
     lastUpdatedGit: Pembaruan pada Artikel/Laman ini mengikuti Commit <a class="link" href="https://github.com/FarrelF/Blog/commit/{{ .Hash }}" target="_blank" rel="noopener">{{ .AbvHash }}</a> di GitHub
     readMore: Baca lebih lanjut >
