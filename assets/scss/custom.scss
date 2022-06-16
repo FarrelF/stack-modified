@@ -55,6 +55,15 @@ img {
     font-family: "Twemoji", "Twitter Emoji", "Apple Color Emoji", "Segoe UI Emoji", "NotoColorEmoji", "Segoe UI Symbol", "Android Emoji";
 }
 
+a {
+    &.link {
+        box-shadow: 0px -2px 0px rgba(var(--link-background-color), var(--link-background-opacity)) inset !important;
+        &:hover {
+            box-shadow: 0px calc(-1rem * var(--article-line-height)) 0px rgba(var(--link-background-color), var(--link-background-opacity-hover)) inset !important;
+        }
+    }
+}
+
 /*
 .article--toc {
     #TableOfContents {
