@@ -1,49 +1,46 @@
 Vibrant:
-  - src: https://cdn.statically.io/js/unpkg.com/node-vibrant@3.1.6/dist/vibrant.min.js
+  - src: https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js
     integrity: sha512-SzKezyOOe19oOvjHkyAkQXCjZ3qmGtpl78ZkLEemazIvoh+kgDVDWYELe3giYBr+40LPqJDAolvCv3TVRSMIaA==
     type: script
     inline: true
     defer: true
 
 PhotoSwipe:
-  - src: https://cdn.statically.io/gh/dimsemenov/PhotoSwipe/v4.1.3/dist/photoswipe.min.js
+  - src: https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js
     integrity: sha512-2R4VJGamBudpzC1NTaSkusXP7QkiUYvEKhpJAxeVCqLDsgW4OqtzorZGpulE3eEA7p++U0ZYmqBwO3m+R2hRjA==
     type: script
-    inline: true
     defer: true
 
-  - src: https://cdn.statically.io/gh/dimsemenov/PhotoSwipe/v4.1.3/dist/photoswipe-ui-default.min.js
+  - src: https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js
     integrity: sha512-SxO0cwfxj/QhgX1SgpmUr0U2l5304ezGVhc0AO2YwOQ/C8O67ynyTorMKGjVv1fJnPQgjdxRz6x70MY9r0sKtQ==
     type: script
-    inline: true
     defer: true
 
-  - src: https://cdn.statically.io/gh/dimsemenov/PhotoSwipe/v4.1.3/dist/default-skin/default-skin.min.css
+  - src: https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css
     inline: false
     type: style
 
-  - src: https://cdn.statically.io/gh/dimsemenov/PhotoSwipe/v4.1.3/dist/photoswipe.min.css
-    inline: true
+  - src: https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css
     type: style
 
 KaTeX:
-  - src: https://cdn.statically.io/css/unpkg.com/katex@0.13.2/dist/katex.min.css
-    integrity: sha512-el2z+rjIj40JeIlKyqcoRjGNjvwHVlyahNQ1PhSs4PCztr6jJ4GgpjgN+1a++L9HZxhLXpa4eLG3ry976z0O2Q==
+  - src: https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css
+    integrity: sha512-Yfxo7zXGaQYyzWNxz8r4s8axNfG4jS3dips8p2HA/wNWmuapakkQiki+/XA3o3Ol+i8WI03cRJVDDUElEtED6g==
     type: style
 
-  - src: https://cdn.statically.io/js/unpkg.com/katex@0.13.2/dist/katex.min.js
-    integrity: sha512-O7WTu9pghLBfbQSGAf2xOFoRxDrHKS3kjRuuiCWttAf76q6h8Qj+KYPBF5EdZsE24LvXiFUshVNWaAxBOij8VA==
+  - src: https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js
+    integrity: sha512-M7/jkZoKEln1jaaY2roCK9Jt4t+j/iru0e2vInDkVO5LY0EBt3m66tjTT5XFsGH2LJG+VRRL2ueIR3U0frs/GQ==
     type: script
     defer: true
 
-  - src: https://cdn.statically.io/js/unpkg.com/katex@0.13.2/dist/contrib/auto-render.min.js
-    integrity: sha512-CzIEOUs11SQ7tekLhEe5gil9kDip4RTJZVf7pSjlxOdVaYYHEcQflhunPz2Q/onNC4slL9jpKjvNgzPAAxEpew==
+  - src: https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/contrib/auto-render.min.js
+    integrity: sha512-ZA/RPrAo88DlwRnnoNVqKINnQNcWERzRK03PDaA4GIJiVZvGFIWQbdWCsUebMZfkWohnfngsDjXzU6PokO4jGw==
     type: script
     defer: true
 
 Twemoji:
-  - src: https://cdn.statically.io/js/unpkg.com/twemoji@13.1.0/dist/twemoji.js
-    integrity: sha512-bCQnYghGORM1nHpRLnCs2UJ4mBGgx1V9qstncNLQ4vejHwTHRh+b8C4T6uDjt37hxb4Lvbq678yZ/zJGJ/pDqQ==
+  - src: https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js
+    integrity: sha512-LK/JJPwWWzXIbw4noGosPmzUQo4Wq+gcwt5vF5ytytrbdzB8FNcHPyGygZue6fq6pxyPaFspIsJ26titsKcUrg==
     inline: true
     type: script
     async: true
