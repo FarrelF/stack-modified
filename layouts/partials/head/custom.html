@@ -1,3 +1,12 @@
+{{ with .Site.Params.customFavicon }}
+    {{ $favicon := resources.Get . | fingerprint "md5" }}
+    {{ if $favicon }}
+        <link rel="shortcut icon" href="{{ $favicon.RelPermalink }}" />
+    {{ else }}
+        {{ errorf "Failed loading favicon from %q" . }}
+    {{ end }}
+{{ end }}
+
 {{ if and (eq .Site.Params.arcio.enabled true) (eq hugo.IsProduction true) }}
     {{ with .Site.Params.arcio.widgetId }}
         <script async src="https://arc.io/widget.min.js#{{ . }}"></script>
@@ -41,13 +50,13 @@
 {{- if and (.Site.Params.CDN.Fonts.URL) (eq hugo.IsProduction true) -}}
     {{- $PermalinkFonts = .Site.Params.CDN.Fonts.URL -}}
 {{- end -}}
-{{ if not .Site.Params.favicon }}
+{{ if and (not .Site.Params.favicon) (not .Site.Params.customFavicon) }}
     <link rel="icon" href="data:,">
 {{ end }}
 
 {{/* Preconnect and DNS Prefetch */}}
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="preconnect" href="https://cdn.jsdelivr.net/" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net/">
 
 {{/* Lato Latin woff2 files */}}
 {{- $LatoLatin_Light_woff2 := resources.Get "fonts/Lato/LatoLatin-Light.woff2" | fingerprint "sha256" -}}
