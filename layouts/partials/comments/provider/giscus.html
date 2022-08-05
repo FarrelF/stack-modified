@@ -7,7 +7,7 @@
     var giscus_observer = new IntersectionObserver(function(entries) {
         // comments section reached
         // start loading Giscus now
-        
+
         if(entries[0].isIntersecting) {
             (function() {
                 var d = document, s = d.createElement('script');
@@ -19,10 +19,13 @@
                 s.setAttribute('data-repo-id', '{{- .repoID -}}');
                 s.setAttribute('data-category', '{{- .category -}}');
                 s.setAttribute('data-category-id', '{{- .categoryID -}}');
+                s.setAttribute('data-mapping', '{{- default `pathname` .mapping -}}');
+                s.setAttribute('data-strict', '{{- default 0 .strict -}}');
                 s.setAttribute('data-reactions-enabled', '{{- default 1 .reactionsEnabled -}}');
-                s.setAttribute('data-lang', '{{- default (printf "%s" $.Site.Language.Lang) .lang -}}');
                 s.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
+                s.setAttribute('data-input-position', '{{- default `top` .inputPosition -}}');
                 s.setAttribute('data-theme', '{{- default `light` .lightTheme -}}');
+                s.setAttribute('data-lang', '{{- default (printf "%s" $.Site.Language.Lang) .lang -}}');
                 (d.getElementById('giscus_thread')).appendChild(s);
                 console.log('Giscus loaded.');
                 (d.getElementById('giscus_empty')).remove()
@@ -51,10 +54,13 @@
             s.setAttribute('data-repo-id', '{{- .repoID -}}');
             s.setAttribute('data-category', '{{- .category -}}');
             s.setAttribute('data-category-id', '{{- .categoryID -}}');
+            s.setAttribute('data-mapping', '{{- default `pathname` .mapping -}}');
+            s.setAttribute('data-strict', '{{- default 0 .strict -}}');
             s.setAttribute('data-reactions-enabled', '{{- default 1 .reactionsEnabled -}}');
-            s.setAttribute('data-lang', '{{- default (printf "%s" $.Site.Language.Lang) .lang -}}');
             s.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
+            s.setAttribute('data-input-position', '{{- default `top` .inputPosition -}}');
             s.setAttribute('data-theme', '{{- default `light` .lightTheme -}}');
+            s.setAttribute('data-lang', '{{- default (printf "%s" $.Site.Language.Lang) .lang -}}');
             giscus_hook.appendChild(s);
             console.log('Giscus loaded.');
             is_giscus_empty.remove();
@@ -104,4 +110,3 @@
     })();
 </script>
 {{- end -}}
-
