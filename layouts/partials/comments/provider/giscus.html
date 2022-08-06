@@ -1,8 +1,31 @@
 {{- with .Site.Params.comments.giscus -}}
+{{- if and (.lazyLoad) (or (eq .lazyLoad.type "intersectionObserver") (eq .lazyLoad.type "scrollBar")) -}}
 <div id="giscus_thread">
     <div id="giscus_empty"></div>
 </div>
-{{- if eq .lazyLoad "intersectionObserver" -}}
+{{- else -}}
+<script
+    src="{{- default `https://giscus.app` .hostURL -}}/client.js"
+    data-repo="{{- .repo -}}"
+    data-repo-id="{{- .repoID -}}"
+    data-category="{{- .category -}}"
+    data-category-id="{{- .categoryID -}}"
+    data-mapping="{{- default `pathname` .mapping -}}"
+    data-strict="{{- default 0 .strict -}}"
+    data-reactions-enabled="{{- default 1 .reactionsEnabled -}}"
+    data-emit-metadata="{{- default 0 .emitMetadata -}}"
+    data-input-position="{{- default `top` .inputPosition -}}"
+    data-theme="{{- default `light` .lightTheme -}}"
+    data-lang="{{- default (printf `%s` $.Site.Language.Lang) .lang -}}"
+    {{- if eq .lazyLoad.type "native" -}}
+    data-loading="lazy"
+    {{- end -}}
+    crossorigin="anonymous"
+    async
+></script>
+{{- end -}}
+
+{{- if eq .lazyLoad.type "intersectionObserver" -}}
 <script>
     var giscus_observer = new IntersectionObserver(function(entries) {
         // comments section reached
@@ -11,7 +34,7 @@
         if(entries[0].isIntersecting) {
             (function() {
                 var d = document, s = d.createElement('script');
-                s.src = 'https://giscus.app/client.js';
+                s.src = '{{- default `https://giscus.app` .hostURL -}}/client.js';
                 s.type = 'text/javascript';
                 s.async = true;
                 s.crossOrigin = 'anonymous';
@@ -36,7 +59,7 @@
     }, { threshold: [0] });
     giscus_observer.observe(document.querySelector("#giscus_thread"));
 </script>
-{{- else -}}
+{{- else if eq .lazyLoad.type "scrollBar" -}}
 <script>
     function load_giscus() {
         var d = document;
@@ -47,7 +70,7 @@
 
         if( giscus_target && is_giscus_empty ) {
             s.type = 'text/javascript';
-            s.src = 'https://giscus.app/client.js';
+            s.src = '{{- default `https://giscus.app` .hostURL -}}/client.js';
             s.async = true;
             s.crossOrigin = "anonymous";
             s.setAttribute('data-repo', '{{- .repo -}}');
@@ -88,14 +111,14 @@
                         },
                     },
                 },
-                "https://giscus.app"
+                "{{- default `https://giscus.app` .hostURL -}}"
             );
         }
     }
 
     (function () {
         addEventListener("message", (e) => {
-            if (event.origin !== "https://giscus.app") return;
+            if (event.origin !== "{{- default `https://giscus.app` .hostURL -}}") return;
             handler();
         });
         window.addEventListener("onColorSchemeChange", handler);
