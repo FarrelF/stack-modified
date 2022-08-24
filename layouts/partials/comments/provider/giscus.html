@@ -1,4 +1,29 @@
 {{- with .Site.Params.comments.giscus -}}
+{{- $GiscusDarkTheme := default "dark_dimmed" .darkTheme -}}
+{{- $GiscusLightTheme := default "light" .lightTheme -}}
+
+{{- if eq hugo.IsProduction true -}}
+{{- if strings.HasPrefix $GiscusDarkTheme "http" -}}
+    {{- $GiscusDarkTheme = resources.GetRemote (printf "%s" .darkTheme) -}}
+    {{- $GiscusDarkTheme = $GiscusDarkTheme | toCSS (dict "targetPath" "css/giscus-themes/dark.css" "outputStyle" "compressed") -}}
+    {{- $GiscusDarkTheme = $GiscusDarkTheme | minify | fingerprint "sha256" -}}
+    {{- $GiscusDarkTheme = $GiscusDarkTheme.Permalink -}}
+{{- else if and (not (strings.HasPrefix $GiscusDarkTheme "http")) (strings.HasSuffix $GiscusDarkTheme "css") -}}
+    {{- $GiscusDarkTheme = resources.Get (printf "%s" .darkTheme) | minify | fingerprint "sha256" -}}
+    {{- $GiscusDarkTheme = $GiscusDarkTheme.Permalink -}}
+{{- end -}}
+
+{{- if strings.HasPrefix $GiscusLightTheme "http" -}}
+    {{- $GiscusLightTheme = resources.GetRemote (printf "%s" .lightTheme) -}}
+    {{- $GiscusLightTheme = $GiscusLightTheme | toCSS (dict "targetPath" "css/giscus-themes/light.css" "outputStyle" "compressed") -}}
+    {{- $GiscusLightTheme = $GiscusLightTheme | minify | fingerprint "sha256" -}}
+    {{- $GiscusLightTheme = $GiscusLightTheme.Permalink -}}
+{{- else if and (not (strings.HasPrefix $GiscusLightTheme "http")) (strings.HasSuffix $GiscusLightTheme "css") -}}
+    {{- $GiscusLightTheme = resources.Get (printf "%s" .lightTheme) | minify | fingerprint "sha256" -}}
+    {{- $GiscusLightTheme = $GiscusLightTheme.Permalink -}}
+{{- end -}}
+{{- end -}}
+
 {{- if and (.lazyLoad) (or (eq .lazyLoad.type "intersectionObserver") (eq .lazyLoad.type "scrollBar")) -}}
 <div id="giscus_thread">
     <div id="giscus_empty"></div>
@@ -15,7 +40,7 @@
     data-reactions-enabled="{{- default 1 .reactionsEnabled -}}"
     data-emit-metadata="{{- default 0 .emitMetadata -}}"
     data-input-position="{{- default `top` .inputPosition -}}"
-    data-theme="{{- default `light` .lightTheme -}}"
+    data-theme="{{- $GiscusLightTheme -}}"
     data-lang="{{- default (printf `%s` $.Site.Language.Lang) .lang -}}"
     {{- if eq .lazyLoad.type "native" -}}
     data-loading="lazy"
@@ -47,7 +72,7 @@
                 s.setAttribute('data-reactions-enabled', '{{- default 1 .reactionsEnabled -}}');
                 s.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
                 s.setAttribute('data-input-position', '{{- default `top` .inputPosition -}}');
-                s.setAttribute('data-theme', '{{- default `light` .lightTheme -}}');
+                s.setAttribute('data-theme', '{{- $GiscusLightTheme -}}');
                 s.setAttribute('data-lang', '{{- default (printf "%s" $.Site.Language.Lang) .lang -}}');
                 (d.getElementById('giscus_thread')).appendChild(s);
                 console.log('Giscus loaded.');
@@ -82,7 +107,7 @@
             s.setAttribute('data-reactions-enabled', '{{- default 1 .reactionsEnabled -}}');
             s.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
             s.setAttribute('data-input-position', '{{- default `top` .inputPosition -}}');
-            s.setAttribute('data-theme', '{{- default `light` .lightTheme -}}');
+            s.setAttribute('data-theme', '{{- $GiscusLightTheme -}}');
             s.setAttribute('data-lang', '{{- default (printf "%s" $.Site.Language.Lang) .lang -}}');
             giscus_hook.appendChild(s);
             console.log('Giscus loaded.');
@@ -125,9 +150,9 @@
 
         function handler() {
             if (document.documentElement.dataset.scheme === "light") {
-                setGiscusTheme('{{- default "light" .lightTheme -}}');
+                setGiscusTheme('{{- $GiscusLightTheme -}}');
             } else {
-                setGiscusTheme('{{- default "dark_dimmed" .darkTheme -}}');
+                setGiscusTheme('{{- $GiscusDarkTheme -}}');
             }
         }
     })();
