@@ -2,7 +2,6 @@
 {{- $GiscusDarkTheme := default "dark_dimmed" .darkTheme -}}
 {{- $GiscusLightTheme := default "light" .lightTheme -}}
 
-{{- if eq hugo.IsProduction true -}}
 {{- if strings.HasPrefix $GiscusDarkTheme "http" -}}
     {{- $GiscusDarkTheme = resources.GetRemote (printf "%s" .darkTheme) -}}
     {{- $GiscusDarkTheme = $GiscusDarkTheme | toCSS (dict "targetPath" "css/giscus-themes/dark.css" "outputStyle" "compressed") -}}
@@ -21,7 +20,6 @@
 {{- else if and (not (strings.HasPrefix $GiscusLightTheme "http")) (strings.HasSuffix $GiscusLightTheme "css") -}}
     {{- $GiscusLightTheme = resources.Get (printf "%s" .lightTheme) | minify | fingerprint "sha256" -}}
     {{- $GiscusLightTheme = $GiscusLightTheme.Permalink -}}
-{{- end -}}
 {{- end -}}
 
 {{- if and (.lazyLoad) (or (eq .lazyLoad.type "intersectionObserver") (eq .lazyLoad.type "scrollBar")) -}}
