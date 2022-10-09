@@ -1,24 +1,28 @@
 {{- with .Site.Params.comments.giscus -}}
 {{- $GiscusDarkTheme := default "dark_dimmed" .darkTheme -}}
 {{- $GiscusLightTheme := default "light" .lightTheme -}}
+{{- $themeHash := default "sha256" .themeHash -}}
+{{- $opts := "" -}}
 
 {{- if strings.HasPrefix $GiscusDarkTheme "http" -}}
+    {{- $opts = dict "targetPath" "css/giscus-themes/dark.css" "outputStyle" "compressed" -}}
     {{- $GiscusDarkTheme = resources.GetRemote (printf "%s" .darkTheme) -}}
-    {{- $GiscusDarkTheme = $GiscusDarkTheme | toCSS (dict "targetPath" "css/giscus-themes/dark.css" "outputStyle" "compressed") -}}
-    {{- $GiscusDarkTheme = $GiscusDarkTheme | minify | fingerprint "sha256" -}}
+    {{- $GiscusDarkTheme = $GiscusDarkTheme | toCSS $opts -}}
+    {{- $GiscusDarkTheme = $GiscusDarkTheme | minify | fingerprint (printf "%s" $themeHash) -}}
     {{- $GiscusDarkTheme = $GiscusDarkTheme.Permalink -}}
 {{- else if and (not (strings.HasPrefix $GiscusDarkTheme "http")) (strings.HasSuffix $GiscusDarkTheme "css") -}}
-    {{- $GiscusDarkTheme = resources.Get (printf "%s" .darkTheme) | minify | fingerprint "sha256" -}}
+    {{- $GiscusDarkTheme = resources.Get (printf "%s" .darkTheme) | minify | fingerprint (printf "%s" $themeHash) -}}
     {{- $GiscusDarkTheme = $GiscusDarkTheme.Permalink -}}
 {{- end -}}
 
 {{- if strings.HasPrefix $GiscusLightTheme "http" -}}
+    {{- $opts = dict "targetPath" "css/giscus-themes/light.css" "outputStyle" "compressed" -}}
     {{- $GiscusLightTheme = resources.GetRemote (printf "%s" .lightTheme) -}}
-    {{- $GiscusLightTheme = $GiscusLightTheme | toCSS (dict "targetPath" "css/giscus-themes/light.css" "outputStyle" "compressed") -}}
-    {{- $GiscusLightTheme = $GiscusLightTheme | minify | fingerprint "sha256" -}}
+    {{- $GiscusLightTheme = $GiscusLightTheme | toCSS $opts -}}
+    {{- $GiscusLightTheme = $GiscusLightTheme | minify | fingerprint (printf "%s" $themeHash) -}}
     {{- $GiscusLightTheme = $GiscusLightTheme.Permalink -}}
 {{- else if and (not (strings.HasPrefix $GiscusLightTheme "http")) (strings.HasSuffix $GiscusLightTheme "css") -}}
-    {{- $GiscusLightTheme = resources.Get (printf "%s" .lightTheme) | minify | fingerprint "sha256" -}}
+    {{- $GiscusLightTheme = resources.Get (printf "%s" .lightTheme) | minify | fingerprint (printf "%s" $themeHash) -}}
     {{- $GiscusLightTheme = $GiscusLightTheme.Permalink -}}
 {{- end -}}
 
