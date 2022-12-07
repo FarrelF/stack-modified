@@ -127,6 +127,7 @@
 </script>
 {{- end -}}
 <script>
+    let giscusLoaded = false;
     function setGiscusTheme(theme) {
         let giscus = document.querySelector("iframe.giscus-frame");
         if (giscus) {
@@ -146,11 +147,13 @@
     (function () {
         addEventListener("message", (e) => {
             if (event.origin !== "{{- default `https://giscus.app` .hostURL -}}") return;
+            giscusLoaded = true;
             handler();
         });
         window.addEventListener("onColorSchemeChange", handler);
 
         function handler() {
+            if (!giscusLoaded) return;
             if (document.documentElement.dataset.scheme === "light") {
                 setGiscusTheme('{{- $GiscusLightTheme -}}');
             } else {
