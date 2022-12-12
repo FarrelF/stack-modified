@@ -11,6 +11,13 @@ details {
     }
 }
 
+.article-content, .article-subtitle {
+    text-align: justify;
+    word-spacing: -0.05em;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+}
+
 th, td {
     &.table-info {
         padding: 0.75em;
