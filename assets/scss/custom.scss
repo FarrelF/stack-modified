@@ -2,6 +2,13 @@ details {
     &.info {
         padding: 0.75em;
         border: var(--heading-border-size) solid;
+
+        p {
+            text-align: justify;
+            word-spacing: -0.05em;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+        }
     }
 
     summary {
@@ -22,6 +29,13 @@ th, td {
     &.table-info {
         padding: 0.75em;
         border: var(--heading-border-size) solid;
+
+        p {
+            text-align: justify;
+            word-spacing: -0.05em;
+            hyphens: auto;
+            -webkit-hyphens: auto;
+        }
     }
 }
 
