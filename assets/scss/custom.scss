@@ -1,3 +1,14 @@
+/** Below code source: https://github.com/CaiJimmy/hugo-theme-stack/issues/754 **/
+:root {
+    --body-text-color: #707070;
+    --card-text-color-tertiary: #767676;
+
+    li.current span {
+        font-style: italic;
+    }
+}
+/** Code End **/
+
 details {
     &.info {
         padding: 0.75em;
