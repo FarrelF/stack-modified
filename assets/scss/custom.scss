@@ -89,6 +89,10 @@ a {
     }
 }
 
+a, code {
+    word-break: break-word;
+}
+
 /*
 .article--toc {
     #TableOfContents {
