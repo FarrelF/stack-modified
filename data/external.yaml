@@ -39,8 +39,8 @@ KaTeX:
     defer: true
 
 Twemoji:
-  - src: https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js
-    integrity: sha512-LK/JJPwWWzXIbw4noGosPmzUQo4Wq+gcwt5vF5ytytrbdzB8FNcHPyGygZue6fq6pxyPaFspIsJ26titsKcUrg==
-    inline: true
+  - src: https://cdn.jsdelivr.net/npm/@twemoji/api@14.1.0/dist/twemoji.min.js
+    integrity: sha512-yIcAVtBjdvpebQnTVzk6nQhZt4va0Ic1hSCUQ6qO40+fCYxJdfiJq4tQqTCl8KfLxmqCE4rMkVEQgx8phfvB4Q==
+    inline: false
     type: script
     async: true
