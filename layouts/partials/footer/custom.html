@@ -6,10 +6,10 @@
     window.onload = function() {
         twemoji.parse(document.body, 
             {
-                folder: '{{ .Path }}', 
-                ext: '{{ .Ext }}',
-                base: '{{ .baseURL }}',
-                size: '{{ .Size }}',
+                folder: '{{ .path }}', 
+                ext: '{{ .ext }}',
+                {{ with .baseURL }}base: '{{ . }}',{{ end }}
+                {{ with .size }}size: '{{ . }}',{{ end }}
                 className: '{{ .className }}'
             }
         );
