@@ -1,4 +1,4 @@
-{{- $opts := dict "targetPath" "style.css" "outputStyle" "compressed" -}}
+{{- $opts := dict "targetPath" "css/style.css" "outputStyle" "compressed" -}}
 {{ $sass := resources.Get "scss/style.scss" }}
 {{ $style := $sass | resources.ToCSS $opts | minify | fingerprint (default "sha512" $.Site.Params.style.cryptoHash) }}
 {{ $Permalink := $style.RelPermalink }}
