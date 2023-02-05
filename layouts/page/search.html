@@ -24,7 +24,7 @@
 </script>
 {{- $Permalink := "" -}}
 {{- $searchScript := "" -}}
-{{- $opts := dict "JSXFactory" "createElement" "targetPath" "search.js" -}}
+{{- $opts := dict "JSXFactory" "createElement" "targetPath" "js/search.js" -}}
 {{- if eq hugo.IsProduction true -}}
     {{- $searchScript = resources.Get "ts/search.tsx" | js.Build $opts | minify | fingerprint "sha384" -}}
     {{- $Permalink = $searchScript.RelPermalink -}}
