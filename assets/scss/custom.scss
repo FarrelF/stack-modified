@@ -1,7 +1,9 @@
 /** Below code source: https://github.com/CaiJimmy/hugo-theme-stack/issues/754 **/
 :root {
     --body-text-color: #707070;
+    --card-background: rgba(255, 255, 255, 0.9);
     --card-text-color-tertiary: #767676;
+    --card-text-color-main: #424242;
 
     li.current span {
         font-style: italic;
@@ -12,7 +14,7 @@
 details {
     &.info {
         padding: 0.75em;
-        border: var(--heading-border-size) solid;
+        border: var(--heading-border-size) solid var(--card-text-color-secondary);
     }
 
     summary {
@@ -32,7 +34,7 @@ details {
 th, td {
     &.table-info {
         padding: 0.75em;
-        border: var(--heading-border-size) solid;
+        border: var(--heading-border-size) solid var(--card-text-color-secondary);
 
         p {
             text-align: justify;
