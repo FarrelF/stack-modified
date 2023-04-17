@@ -20,6 +20,10 @@ details {
     }
 }
 
+.center-text, .pswp__caption__center {
+    text-align: center !important;
+}
+
 .article-content, .article-subtitle {
     text-align: justify;
     word-spacing: -0.05em;
