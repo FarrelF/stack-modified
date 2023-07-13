@@ -1,17 +1,52 @@
-{{ with .Site.Params.customFavicon }}
-    {{ $favicon := resources.Get . | fingerprint "md5" }}
-    {{ if $favicon }}
-        <link rel="shortcut icon" href="{{ $favicon.RelPermalink }}" />
-    {{ else }}
-        {{ errorf "Failed loading favicon from %q" . }}
-    {{ end }}
-{{ end }}
+{{- with .Site.Params.customFavicon -}}
+    {{- if .favicon -}}
+    {{- $favicon := resources.Get .favicon | fingerprint "md5" -}}
+    <link rel="shortcut icon" href="{{ $favicon.RelPermalink }}" />
+    {{- end -}}
 
-{{ if and (eq .Site.Params.arcio.enabled true) (eq hugo.IsProduction true) }}
-    {{ with .Site.Params.arcio.widgetId }}
+    {{- if .favicon16 -}}
+    {{- $favicon16 := resources.Get .favicon16 | fingerprint "md5" -}}
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ $favicon16.RelPermalink }}">
+    {{- end -}}
+
+    {{- if .favicon32 -}}
+    {{- $favicon32 := resources.Get .favicon32 | fingerprint "md5" -}}
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ $favicon32.RelPermalink }}">
+    {{- end -}}
+
+    {{- if .safariPinnedTab -}}
+    {{- $safariPinnedTab := resources.Get .safariPinnedTab | fingerprint "md5" -}}
+    <link rel="mask-icon" href="{{ $safariPinnedTab.RelPermalink }}" color="{{ default `#5bbad5` .maskIconColor }}">
+    {{- end -}}
+
+    {{- if .appleTouchIcon -}}
+    {{- $appleTouchIcon := resources.Get .appleTouchIcon | fingerprint "md5" -}}
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ $appleTouchIcon.RelPermalink }}">
+    {{- end -}}
+
+    {{- if eq .browserConfig.enabled true -}}
+        {{- $bcPath := .browserConfig.path | default "browserconfig.xml" -}}
+        {{- $bc := resources.Get $bcPath -}}
+        {{- $bc = $bc | resources.ExecuteAsTemplate $bcPath . -}}
+        <meta name="msapplication-TileColor" content="{{ default `#da532c` .browserConfig.msTileColor }}">
+        <meta name="msapplication-config" content="{{ $bc.RelPermalink }}" />
+    {{- end -}}
+
+    {{- if eq .webManifest.enabled true -}}
+        {{- $wmPath := .webManifest.path | default "site.webmanifest" -}}
+        {{- $wm := resources.Get $wmPath -}}
+        {{- $wm = $wm | resources.ExecuteAsTemplate $wmPath . -}}
+        <link rel="manifest" href="{{ $wm.RelPermalink }}">
+        <meta name="theme-color" content="{{ default `#ffffff` .webManifest.themeColor }}">
+    {{- end -}}
+{{- end -}}
+
+{{- if and (eq .Site.Params.arcio.enabled true) (eq hugo.IsProduction true) -}}
+    {{- with .Site.Params.arcio.widgetId -}}
         <script async src="https://arc.io/widget.min.js#{{ . }}"></script>
-    {{ end }}
-{{ end }}
+    {{- end -}}
+{{- end -}}
+
 {{- if and (eq .Site.Params.Counter.enabled true) (eq hugo.IsProduction true) -}}
     {{- with .Site.Params.Counter -}}
     <script>if(!sessionStorage.getItem("_swa")&&document.referrer.indexOf(location.protocol+"//"+location.host)!== 0){fetch("https://counter.dev/track?"+new URLSearchParams({referrer:document.referrer,screen:screen.width+"x"+screen.height,user:"{{- .Username -}}",utcoffset:"{{- .utcOffset -}}"}))};sessionStorage.setItem("_swa","1");</script>
