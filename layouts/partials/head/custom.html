@@ -41,9 +41,15 @@
     {{- end -}}
 {{- end -}}
 
+{{- if and (eq .Site.Params.umami.enabled true) (eq hugo.IsProduction true) -}}
+    {{- with .Site.Params.umami -}}
+    <script async src="{{- .hostURL -}}/script.js" data-website-id="{{- .websiteID -}}"></script>
+    {{- end -}}
+{{- end -}}
+
 {{- if and (eq .Site.Params.arcio.enabled true) (eq hugo.IsProduction true) -}}
-    {{- with .Site.Params.arcio.widgetId -}}
-        <script async src="https://arc.io/widget.min.js#{{ . }}"></script>
+    {{- with .Site.Params.arcio -}}
+        <script async src="https://arc.io/widget.min.js#{{ .widgetId }}"></script>
     {{- end -}}
 {{- end -}}
 
