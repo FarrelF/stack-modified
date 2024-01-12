@@ -6,11 +6,11 @@
     window.onload = function() {
         twemoji.parse(document.body, 
             {
-                folder: '{{ .path }}', 
-                ext: '{{ .ext }}',
-                {{ with .baseURL }}base: '{{ . }}',{{ end }}
-                {{ with .size }}size: '{{ . }}',{{ end }}
-                className: '{{ .className }}'
+                folder: '{{- default "svg" .path -}}', 
+                ext: '{{- default ".svg" .ext -}}',
+                {{ with .baseURL }}base: '{{- . -}}',{{ end }}
+                {{ with .size }}size: '{{- . -}}',{{ end }}
+                className: '{{- default "emoji" .className -}}'
             }
         );
     }
