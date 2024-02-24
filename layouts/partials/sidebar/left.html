@@ -100,9 +100,10 @@
         <div class="menu-bottom-section">
             <ol class="menu">
             {{- $currentLanguageCode := .Language.Lang -}}
-            {{ if ( compare.Gt .Site.Home.AllTranslations 1 ) }}
-                {{ with .Site.Home.AllTranslations }}
-                    <li id="i18n-switch">  
+            {{- $home := .Site.Home -}}
+            {{ if compare.Gt $home.AllTranslations.Len 1 }}
+                {{ with $home.AllTranslations }}
+                    <li id="i18n-switch">
                         {{ partial "helper/icon" "language" }}
                         <select name="language" title="language" onchange="window.location.href = this.selectedOptions[0].value">
                             {{ range . }}
