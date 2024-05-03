@@ -18,4 +18,4 @@
     {{ $description = .Params.descriptionSEO }}
 {{ end }}
 
-{{ return ($description | plainify)}}
+{{ return (replaceRE "\n" " " $description | plainify) }}
