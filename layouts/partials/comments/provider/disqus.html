@@ -1,12 +1,12 @@
 <div class="disqus-container">
     {{- $pc := .Site.Config.Privacy.Disqus -}}
     {{- if not $pc.Disable -}}
-    {{ if .Site.DisqusShortname }}<div id="disqus_thread"></div>
+    {{ if .Site.Config.Services.Disqus.Shortname }}<div id="disqus_thread"></div>
     <script type="application/javascript">
         var disqus_config = function () {
-        {{with .Params.disqus_identifier }}this.page.identifier = '{{ . }}';{{end}}
-        {{with .Params.disqus_title }}this.page.title = '{{ . }}';{{end}}
-        {{with .Params.disqus_url }}this.page.url = '{{ . | html  }}';{{end}}
+        {{ with .Params.disqus_identifier }}this.page.identifier = '{{ . }}';{{end}}
+        {{ with .Params.disqus_title }}this.page.title = '{{ . }}';{{end}}
+        {{ with .Params.disqus_url }}this.page.url = '{{ . | html  }}';{{end}}
         };
         var disqus_observer = new IntersectionObserver(function(entries) {
             // comments section reached
@@ -18,7 +18,7 @@
             if(entries[0].isIntersecting) {
                 (function() {
                     var d = document, s = d.createElement('script');
-                    s.src = 'https://{{ .Site.DisqusShortname }}.disqus.com/embed.js';
+                    s.src = 'https://{{- .Site.Config.Services.Disqus.Shortname -}}.disqus.com/embed.js';
                     s.setAttribute('data-timestamp', +new Date());
                     (d.head || d.body).appendChild(s);
                 })();
