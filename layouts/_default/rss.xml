@@ -39,8 +39,10 @@
         <guid>{{ .Permalink }}</guid>
         <description>
             {{- $image := partial "helper/image" (dict "Context" . "Type" "rss") -}}
+            {{- $thumbnail := "" -}}
             {{- if $image.exists -}}
-                {{ "<" | html }}img src="{{ $image.permalink | absURL }}" alt="Featured image of post {{ .Title }}" {{ "/>" | html}}
+                {{- $thumbnail = $image.resource.Resize "800x" -}}
+                {{ "<" | html }}img src="{{ $thumbnail.Permalink }}" alt="Featured image of post {{ .Title }}" {{ "/>" | html}}
             {{- end -}}{{ $content }}</description>
         </item>
         {{ end }}
