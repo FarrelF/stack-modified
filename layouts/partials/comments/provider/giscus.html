@@ -11,7 +11,8 @@
     {{- $GiscusDarkTheme = $GiscusDarkTheme | minify | fingerprint (printf "%s" $themeHash) -}}
     {{- $GiscusDarkTheme = $GiscusDarkTheme.Permalink -}}
 {{- else if and (not (strings.HasPrefix $GiscusDarkTheme "http")) (strings.HasSuffix $GiscusDarkTheme "css") -}}
-    {{- $GiscusDarkTheme = resources.Get (printf "%s" .darkTheme) | minify | fingerprint (printf "%s" $themeHash) -}}
+    {{- $GiscusDarkTheme = resources.Get (printf "%s" .darkTheme) -}}
+    {{- $GiscusDarkTheme = $GiscusDarkTheme | resources.ExecuteAsTemplate (printf "%s" .darkTheme) . | minify | fingerprint (printf "%s" $themeHash) -}}
     {{- $GiscusDarkTheme = $GiscusDarkTheme.Permalink -}}
 {{- end -}}
 
@@ -22,7 +23,8 @@
     {{- $GiscusLightTheme = $GiscusLightTheme | minify | fingerprint (printf "%s" $themeHash) -}}
     {{- $GiscusLightTheme = $GiscusLightTheme.Permalink -}}
 {{- else if and (not (strings.HasPrefix $GiscusLightTheme "http")) (strings.HasSuffix $GiscusLightTheme "css") -}}
-    {{- $GiscusLightTheme = resources.Get (printf "%s" .lightTheme) | minify | fingerprint (printf "%s" $themeHash) -}}
+    {{- $GiscusLightTheme = resources.Get (printf "%s" .lightTheme) -}}
+    {{- $GiscusLightTheme = $GiscusLightTheme | resources.ExecuteAsTemplate (printf "%s" .lightTheme) . | minify | fingerprint (printf "%s" $themeHash) -}}
     {{- $GiscusLightTheme = $GiscusLightTheme.Permalink -}}
 {{- end -}}
 
