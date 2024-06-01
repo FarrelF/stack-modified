@@ -1,0 +1,100 @@
+/*!
+*   Hugo Theme Stack
+*
+*   @author: Jimmy Cai
+*   @website: https://jimmycai.com
+*   @link: https://github.com/CaiJimmy/hugo-theme-stack
+*/
+
+{{- $PermalinkFonts := "" -}}
+{{- if and (.Site.Params.CDN.Fonts.URL) (eq hugo.IsProduction true) -}}
+    {{- $PermalinkFonts = .Site.Params.CDN.Fonts.URL -}}
+{{- end -}}
+
+{{/* Lato Latin woff2 files */}}
+{{- $LatoLatin_Light_woff2 := resources.Get "fonts/Lato/LatoLatin-Light.woff2" | fingerprint "sha256" -}}
+{{- $LatoLatin_LightItalic_woff2 := resources.Get "fonts/Lato/LatoLatin-LightItalic.woff2" | fingerprint "sha256" -}}
+{{- $LatoLatin_Regular_woff2 := resources.Get "fonts/Lato/LatoLatin-Regular.woff2" | fingerprint "sha256" -}}
+{{- $LatoLatin_Italic_woff2 := resources.Get "fonts/Lato/LatoLatin-Italic.woff2" | fingerprint "sha256" -}}
+{{- $LatoLatin_Bold_woff2 := resources.Get "fonts/Lato/LatoLatin-Bold.woff2" | fingerprint "sha256" -}}
+{{- $LatoLatin_BoldItalic_woff2 := resources.Get "fonts/Lato/LatoLatin-BoldItalic.woff2" | fingerprint "sha256" -}}
+
+{{/* Lato Latin woff files */}}
+{{- $LatoLatin_Light_woff := resources.Get "fonts/Lato/LatoLatin-Light.woff" | fingerprint "sha256" -}}
+{{- $LatoLatin_LightItalic_woff := resources.Get "fonts/Lato/LatoLatin-LightItalic.woff" | fingerprint "sha256" -}}
+{{- $LatoLatin_Regular_woff := resources.Get "fonts/Lato/LatoLatin-Regular.woff" | fingerprint "sha256" -}}
+{{- $LatoLatin_Italic_woff := resources.Get "fonts/Lato/LatoLatin-Italic.woff" | fingerprint "sha256" -}}
+{{- $LatoLatin_Bold_woff := resources.Get "fonts/Lato/LatoLatin-Bold.woff" | fingerprint "sha256" -}}
+{{- $LatoLatin_BoldItalic_woff := resources.Get "fonts/Lato/LatoLatin-BoldItalic.woff" | fingerprint "sha256" -}}
+
+@import "breakpoints.scss";
+@import "variables.scss";
+@import "grid.scss";
+
+@import "external/normalize.scss";
+
+@import "partials/menu.scss";
+@import "partials/article.scss";
+@import "partials/widgets.scss";
+@import "partials/footer.scss";
+@import "partials/pagination.scss";
+@import "partials/sidebar.scss";
+@import "partials/base.scss";
+@import "partials/layout/article.scss";
+@import "partials/layout/list.scss";
+@import "partials/layout/404.scss";
+@import "partials/layout/search.scss";
+
+@font-face {
+	font-family: 'Lato';
+	font-style: normal;
+	font-weight: 300;
+	font-display: swap;
+	src: url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_Light_woff2.RelPermalink -}}') format('woff2'),  url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_Light_woff.RelPermalink -}}') format('woff');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: 'Lato';
+	font-style: italic;
+	font-weight: 300;
+	font-display: swap;
+	src: url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_LightItalic_woff2.RelPermalink -}}') format('woff2'),  url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_LightItalic_woff.RelPermalink -}}') format('woff');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* Webfont: LatoLatin-Regular */
+@font-face {
+	font-family: 'Lato';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_Regular_woff2.RelPermalink -}}') format('woff2'),  url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_Regular_woff.RelPermalink -}}') format('woff');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: 'Lato';
+	font-style: italic;
+	font-weight: 400;
+	font-display: swap;
+	src: url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_Italic_woff2.RelPermalink -}}') format('woff2'),  url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_Italic_woff.RelPermalink -}}') format('woff');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* Webfont: LatoLatin-Bold */
+@font-face {
+	font-family: 'Lato';
+	font-style: normal;
+	font-weight: 700;
+	font-display: swap;
+	src: url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_Bold_woff2.RelPermalink -}}') format('woff2'),  url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_Bold_woff.RelPermalink -}}') format('woff');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: 'Lato';
+	font-style: italic;
+	font-weight: 700;
+	font-display: swap;
+	src: url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_BoldItalic_woff2.RelPermalink -}}') format('woff2'),  url('{{- printf "%s%s" $PermalinkFonts $LatoLatin_BoldItalic_woff.RelPermalink -}}') format('woff');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@import "general.scss";
+@import "custom.scss";

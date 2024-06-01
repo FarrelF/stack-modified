@@ -1,10 +1,11 @@
+{{- $stylePath := "scss/style.scss" -}}
 {{- $opts := dict "targetPath" "css/style.css" "outputStyle" "compressed" -}}
-{{ $sass := resources.Get "scss/style.scss" }}
-{{ $style := $sass | resources.ToCSS $opts | minify | fingerprint (default "sha512" $.Site.Params.style.cryptoHash) }}
-{{ $Permalink := $style.RelPermalink }}
-{{ if and (.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) }}
-    {{ $Permalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $style.RelPermalink }}
-{{ end }}
+{{- $sass := resources.Get $stylePath | resources.ExecuteAsTemplate $stylePath . -}}
+{{- $style := $sass | resources.ToCSS $opts | minify | fingerprint (default "sha512" $.Site.Params.style.cryptoHash) -}}
+{{- $Permalink := $style.RelPermalink -}}
+{{- if and (.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) -}}
+    {{- $Permalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $style.RelPermalink -}}
+{{- end -}}
 
 {{- if eq .Site.Params.Style.inlineStyle false -}}
 <link rel="stylesheet" href="{{- $Permalink -}}"{{- if eq .Site.Params.Style.SRIHash true -}} integrity="{{- $style.Data.Integrity -}}"{{- end -}}{{- if hugo.IsProduction -}} crossorigin="anonymous"{{- end -}}>
