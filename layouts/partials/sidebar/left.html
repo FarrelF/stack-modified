@@ -10,16 +10,16 @@
     </button>
 
     <header>
-        {{ with .Site.Params.sidebar.avatar }}
-            {{ if (default true .enabled) }}
+        {{- with .Site.Params.sidebar.avatar -}}
+            {{- if (default true .enabled) -}}
             <figure class="site-avatar">
                 <a href="{{ .Site.BaseURL | relLangURL }}">
-                {{ if not .local }}
+                {{- if not .local -}}
                     <img src="{{ .src }}" width="300" height="300" class="site-logo" loading="lazy" alt="Avatar">
-                {{ else }}
-                    {{ $avatar := resources.Get (.src) }}
+                {{- else -}}
+                    {{- $avatar := resources.Get (.src) -}}
                     
-                    {{ if $avatar }}
+                    {{- if $avatar -}}
                         {{- $avatarResolution := default `300` .resolution -}}
                         {{- $avatarSmall := $avatar.Resize (printf "%dx" $avatarResolution) -}}
                         {{- $avatarPermalink := printf "%s%s" $ImageURL $avatarSmall.RelPermalink -}}
@@ -33,23 +33,23 @@
                             <source srcset="{{ $avatarPermalink }}"
                                     width="{{ $avatarSmall.Width }}" height="{{ $avatarSmall.Height }}">
                             <img src="{{ $avatarPermalink }}" width="{{ $avatarSmall.Width }}"
-                            height="{{ $avatarSmall.Height }}" class="site-logo" loading="lazy" alt="Avatar">
+                            height="{{ $avatarSmall.Height }}" class="site-logo" alt="Avatar">
                         </picture>
                         {{- else -}}
                         <img src="{{ $avatarPermalink }}" width="{{ $avatarSmall.Width }}"
-                            height="{{ $avatarSmall.Height }}" class="site-logo" loading="lazy" alt="Avatar">
+                            height="{{ $avatarSmall.Height }}" class="site-logo" alt="Avatar">
                         {{- end -}}
-                    {{ else }}
+                    {{- else -}}
                         {{ errorf "Failed loading avatar from %q" . }}
-                    {{ end }}
-                {{ end }}
+                    {{- end -}}
+                {{- end -}}
                 </a>
-                {{ with $.Site.Params.sidebar.emoji }}
+                {{- with $.Site.Params.sidebar.emoji -}}
                     <span class="emoji">{{ . }}</span>
-                {{ end }}
+                {{- end -}}
             </figure>
-            {{ end }}
-        {{ end }}
+            {{- end -}}
+        {{- end -}}
         
         <div class="site-meta">
             <h1 class="site-name"><a href="{{ .Site.BaseURL | relLangURL }}">{{ .Site.Title }}</a></h1>
