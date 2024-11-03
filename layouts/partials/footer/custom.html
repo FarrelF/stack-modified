@@ -24,9 +24,9 @@
     {{- $CustomJSAsync := default true (.async) -}}
     {{- $CustomJSDefer := default false (.defer) -}}
     {{- if eq $MinifyCustomJS true -}}
-        {{- $CustomJS = $CustomJS | resources.Minify -}}
+        {{- $CustomJS = $CustomJS | minify -}}
     {{- end -}}
-    {{- $CustomJS = $CustomJS | resources.Fingerprint (default "sha512" .hash) -}}
+    {{- $CustomJS = $CustomJS | fingerprint (default "sha512" .hash) -}}
     {{- $CustomJSPermalink := $CustomJS.RelPermalink -}}
     {{- if and ($.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) -}}
         {{- $CustomJSPermalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $CustomJS.RelPermalink -}}
@@ -54,9 +54,9 @@
     {{- $CustomTSAsync := default true (.async) -}}
     {{- $CustomTSDefer := default false (.defer) -}}
     {{- if eq $MinifyCustomTS true -}}
-        {{- $CustomTS = $CustomTS | resources.Minify -}}
+        {{- $CustomTS = $CustomTS | minify -}}
     {{- end -}}
-    {{- $CustomTS = $CustomTS | resources.Fingerprint (default "sha512" .hash) -}}
+    {{- $CustomTS = $CustomTS | fingerprint (default "sha512" .hash) -}}
     {{- $CustomTSPermalink := $CustomTS.RelPermalink -}}
     {{- if and ($.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) -}}
         {{- $CustomTSPermalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $CustomTS.RelPermalink -}}

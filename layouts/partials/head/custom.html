@@ -63,9 +63,9 @@
     {{- $CustomCSS := $.Page.Resources.GetMatch (printf "%s" .path) -}}
     {{- $MinifyCustomCSS := default true (.minify) -}}
     {{- if eq $MinifyCustomCSS true -}}
-        {{- $CustomCSS = $CustomCSS | resources.Minify -}}
+        {{- $CustomCSS = $CustomCSS | minify -}}
     {{- end -}}
-    {{- $CustomCSS = $CustomCSS | resources.Fingerprint (default "sha512" .hash) -}}
+    {{- $CustomCSS = $CustomCSS | fingerprint (default "sha512" .hash) -}}
     {{- $CustomCSSPermalink := $CustomCSS.RelPermalink -}}
     {{- if and ($.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) -}}
         {{- $CustomCSSPermalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $CustomCSS.RelPermalink -}}
@@ -74,12 +74,12 @@
 {{- end -}}
 
 {{- with .Params.custom.scss -}}
-    {{- $CustomSCSS := $.Page.Resources.GetMatch (printf "%s" .path) | resources.ToCSS -}}
+    {{- $CustomSCSS := $.Page.Resources.GetMatch (printf "%s" .path) | toCSS -}}
     {{- $MinifyCustomSCSS := default true (.minify) -}}
     {{- if eq $MinifyCustomSCSS true -}}
-        {{- $CustomSCSS = $CustomSCSS | resources.Minify -}}
+        {{- $CustomSCSS = $CustomSCSS | minify -}}
     {{- end -}}
-    {{- $CustomSCSS = $CustomSCSS | resources.Fingerprint (default "sha512" .hash) -}}
+    {{- $CustomSCSS = $CustomSCSS | fingerprint (default "sha512" .hash) -}}
     {{- $CustomSCSSPermalink := $CustomSCSS.RelPermalink -}}
     {{- if and ($.Site.Params.CDN.CSS.URL) (eq hugo.IsProduction true) -}}
         {{- $CustomSCSSPermalink = printf "%s%s" $.Site.Params.CDN.CSS.URL $CustomSCSS.RelPermalink -}}
