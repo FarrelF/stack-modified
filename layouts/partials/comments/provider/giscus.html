@@ -45,7 +45,7 @@
     data-emit-metadata="{{- default 0 .emitMetadata -}}"
     data-input-position="{{- default `top` .inputPosition -}}"
     data-theme="{{- $GiscusLightTheme -}}"
-    data-lang="{{- default (default `en` $.Language.LanguageCode) .lang -}}"
+    data-lang="{{- default (default `en` $.Language.Lang) .lang -}}"
     {{- if eq .lazyLoad.type "native" -}}
     data-loading="lazy"
     {{- end -}}
@@ -77,7 +77,7 @@
                 s.setAttribute('data-emit-metadata', '{{- default 0 .emitMetadata -}}');
                 s.setAttribute('data-input-position', '{{- default `top` .inputPosition -}}');
                 s.setAttribute('data-theme', '{{- $GiscusLightTheme -}}');
-                s.setAttribute('data-lang', '{{- default (default `en` $.Language.LanguageCode) .lang -}}');
+                s.setAttribute('data-lang', '{{- default (default `en` $.Language.Lang) .lang -}}');
                 (d.getElementById('giscus_thread')).appendChild(s);
                 console.log('Giscus loaded.');
                 (d.getElementById('giscus_empty')).remove()
