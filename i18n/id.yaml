@@ -33,6 +33,12 @@ article:
         copy: Salin
         copied: Tersalin!
 
+notFound:
+    title:
+        other: 404 - Halaman tidak ditemukan
+    subtitle:
+        other: Halaman yang Anda akses tidak ditemukan, silakan gunakan fasilitas pencarian di bawah ini untuk mencari halaman/artikel yang tersedia di sini.
+
 widget:
     archives:
         title: Arsip
