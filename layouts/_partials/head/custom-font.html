@@ -1,0 +1,14 @@
+{{- $PermalinkFonts := "" -}}
+{{- if and (.Site.Params.CDN.Fonts.URL) (eq hugo.IsProduction true) -}}
+    {{- $PermalinkFonts = .Site.Params.CDN.Fonts.URL -}}
+{{- end -}}
+
+{{/* Lato Latin woff2 files */}}
+{{- $LatoLatin_Regular_woff2 := resources.Get "fonts/Lato/LatoLatin-Regular.woff2" | fingerprint "sha256" -}}
+{{- $LatoLatin_Italic_woff2 := resources.Get "fonts/Lato/LatoLatin-Italic.woff2" | fingerprint "sha256" -}}
+{{- $LatoLatin_Bold_woff2 := resources.Get "fonts/Lato/LatoLatin-Bold.woff2" | fingerprint "sha256" -}}
+
+{{/* Preload fonts */}}
+<link rel="preload" as="font" type="font/woff2" href="{{ printf "%s%s" $PermalinkFonts $LatoLatin_Regular_woff2.RelPermalink }}" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="{{ printf "%s%s" $PermalinkFonts $LatoLatin_Italic_woff2.RelPermalink }}" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="{{ printf "%s%s" $PermalinkFonts $LatoLatin_Bold_woff2.RelPermalink }}" crossorigin>

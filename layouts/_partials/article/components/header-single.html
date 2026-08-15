@@ -1,0 +1,96 @@
+{{- $IsList := .IsList -}}
+{{- $Page := .Page -}}
+<header class="article-header">
+    {{- $image := partial "helper/image" (dict "Image" $Page.Params.image "Resources" $Page.Resources "Context" $Page) -}}
+    {{ if $image }}
+    <div class="article-image">
+        <a href="{{ $Page.RelPermalink }}">
+            {{- $src := $image.Permalink -}}
+            {{- $width := $image.Width -}}
+            {{- $height := $image.Height -}}
+            {{- $srcset := "" -}}
+            {{- $resource := $image.Resource -}}
+
+            {{/* Penanganan Alt Text & Lokalisasi */}}
+            {{- $ArticleInfo := dict "Title" $Page.Title "Slug" $Page.Slug "RelPermalink" $Page.RelPermalink "Date" $Page.Date -}}
+            {{- $alt := default (printf "Featured image of post %s" $Page.Title) (T "article.featuredImageOf" $ArticleInfo) -}}
+
+            {{/* Modifikasi CDN & Resizing Kustom Cover Image */}}
+            {{- if $resource -}}
+                {{- $ImageURL := "" -}}
+                {{- if and ($Page.Site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
+                    {{- $ImageURL = $Page.Site.Params.CDN.Images.URL -}}
+                {{- end -}}
+
+                {{- $width = $resource.Width -}}
+                {{- $height = $resource.Height -}}
+                {{- $src = printf "%s%s" $ImageURL $resource.RelPermalink -}}
+
+                {{- if (default true $Page.Site.Params.imageProcessing.cover.enabled) -}}
+                    {{- $thumbnail := "" -}}
+                    {{- $thumbnailSmall := "" -}}
+                    {{- $thumbnailMedium := "" -}}
+                    {{- $thumbnailLarge := "" -}}
+
+                    {{- if ge $width 1600 -}}
+                        {{- $thumbnail = $resource.Resize "800x" -}}
+                        {{- $thumbnailSmall = $resource.Resize "400x" -}}
+                        {{- $thumbnailMedium = $resource.Resize "1024x" -}}
+                        {{- $thumbnailLarge = $resource.Resize "1600x" -}}
+                        {{- $srcset = printf "%s%s 400w, %s%s 800w, %s%s 1024w, %s%s 1600w" $ImageURL $thumbnailSmall.RelPermalink $ImageURL $thumbnail.RelPermalink $ImageURL $thumbnailMedium.RelPermalink $ImageURL $thumbnailLarge.RelPermalink -}}
+                    {{- else if and (ge $width 1366) (lt $width 1600) -}}
+                        {{- $thumbnail = $resource.Resize "768x" -}}
+                        {{- $thumbnailSmall = $resource.Resize "400x" -}}
+                        {{- $thumbnailMedium = $resource.Resize "1024x" -}}
+                        {{- $thumbnailLarge = $resource.Resize "1366x" -}}
+                        {{- $srcset = printf "%s%s 400w, %s%s 768w, %s%s 1024w, %s%s 1366w" $ImageURL $thumbnailSmall.RelPermalink $ImageURL $thumbnail.RelPermalink $ImageURL $thumbnailMedium.RelPermalink $ImageURL $thumbnailLarge.RelPermalink -}}
+                    {{- else if and (ge $width 1024) (lt $width 1366) -}}
+                        {{- $thumbnail = $resource.Resize "768x" -}}
+                        {{- $thumbnailSmall = $resource.Resize "400x" -}}
+                        {{- $thumbnailMedium = $resource.Resize "1024x" -}}
+                        {{- $srcset = printf "%s%s 400w, %s%s 768w, %s%s 1024w" $ImageURL $thumbnailSmall.RelPermalink $ImageURL $thumbnail.RelPermalink $ImageURL $thumbnailMedium.RelPermalink -}}
+                    {{- else if and (ge $width 768) (lt $width 1024) -}}
+                        {{- $thumbnail = $resource.Resize "600x" -}}
+                        {{- $thumbnailSmall = $resource.Resize "400x" -}}
+                        {{- $thumbnailMedium = $resource.Resize "768x" -}}
+                        {{- $srcset = printf "%s%s 400w, %s%s 600w, %s%s 768w" $ImageURL $thumbnailSmall.RelPermalink $ImageURL $thumbnail.RelPermalink $ImageURL $thumbnailMedium.RelPermalink -}}
+                    {{- else if lt $width 768 -}}
+                        {{- $thumbnail = $resource.Resize "500x" -}}
+                        {{- $thumbnailSmall = $resource.Resize "400x" -}}
+                        {{- $thumbnailMedium = $resource.Resize "600x" -}}
+                        {{- $srcset = printf "%s%s 400w, %s%s 500w, %s%s 600w" $ImageURL $thumbnailSmall.RelPermalink $ImageURL $thumbnail.RelPermalink $ImageURL $thumbnailMedium.RelPermalink -}}
+                    {{- end -}}
+
+                    {{- if $thumbnail -}}
+                        {{- $src = printf "%s%s" $ImageURL $thumbnail.RelPermalink -}}
+                        {{- $width = $thumbnail.Width -}}
+                        {{- $height = $thumbnail.Height -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+
+            {{/* Menyusun Atribut untuk Helper v4 */}}
+            {{- $attributes := dict
+                "src" $src
+                "width" $width
+                "height" $height
+                "alt" $alt
+                "loading" "lazy"
+                "sizes" "(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px"
+            -}}
+
+            {{- if $srcset -}}
+                {{- $attributes = merge $attributes (dict "srcset" $srcset) -}}
+            {{- end -}}
+
+            {{ partial "helper/responsive-image" (dict
+                "Resource" $resource
+                "Widths" (cond (and (not $srcset) $Page.Site.Params.ImageProcessing.Content.Enabled) $Page.Site.Params.ImageProcessing.Content.Widths nil)
+                "Attributes" $attributes
+            ) }}
+        </a>
+    </div>
+    {{ end }}
+
+    {{ partial "article/components/details-single" (dict "Page" $Page "IsList" $IsList) }}
+</header>

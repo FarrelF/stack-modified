@@ -1,0 +1,52 @@
+{{- $List := index hugo.Data.external .Namespace -}}
+{{- with $List -}}
+    {{- range . -}}
+        {{- $inline := default false .inline -}}
+        {{- if eq .type "script" -}}
+            {{- if eq $inline false -}}
+            <script
+                src="{{ .src }}"
+                {{- with .integrity -}}
+                integrity="{{ . }}"
+                {{- end -}}
+                crossorigin="{{ default `anonymous` .crossorigin }}"
+                {{- if eq .defer true -}}
+                defer
+                {{- end -}}
+                {{- if eq .async true -}}
+                async
+                {{- end -}}
+                >
+            </script>
+            {{- else -}}
+            {{- $file := resources.GetRemote (printf "%s" .src) | fingerprint (default "sha512" $.Context.Site.Params.script.cryptoHash) -}}
+            <script
+                type="application/javascript"
+                integrity="{{- $file.Data.Integrity -}}"
+                crossorigin="{{- default `anonymous` .crossorigin -}}"
+                >
+                {{- $file.Content | safeJS -}}
+            </script>
+            {{- end -}}
+        {{- else if eq .type "style" -}}
+            {{- if eq $inline false -}}
+            <link 
+                rel="stylesheet"
+                type="text/css"
+                href="{{ .src }}"
+                {{- with .integrity -}}
+                integrity="{{ . }}"
+                {{- end -}}
+                crossorigin="{{ default `anonymous` .crossorigin }}"
+            >
+            {{- else -}}
+            {{- $file := resources.GetRemote (printf "%s" .src) | toCSS | minify -}}
+            <style type="text/css">{{- $file.Content | safeCSS -}}</style>
+            {{- end -}}
+        {{- else -}}
+            {{- errorf "Error: unknown external resource type: %s" .type -}}
+        {{- end -}}
+    {{- end -}}
+{{- else -}}
+    {{- errorf "Error: external resource '%s' is not found" .Namespace -}}
+{{- end -}}

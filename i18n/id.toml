@@ -1,0 +1,90 @@
+toggleMenu = "Tampilkan Menu"
+darkMode   = "Mode Gelap"
+
+[list]
+    section = "Bagian"
+
+    [list.page]
+        one   = "{{ .Count }} halaman"
+        other = "{{ .Count }} halaman"
+
+    [list.subsection]
+        one   = "Subbagian"
+        other = "Subbagian"
+
+[article]
+    back            = "Kembali"
+    tableOfContents = "Daftar Isi"
+    relatedContent  = "Konten terkait"
+    lastUpdatedOn   = "Terakhir diperbarui pada {{ .Weekday }}, {{ .Day }} {{ .Month }} {{ .Year }}, pukul {{ .Time }} WIB"
+    lastUpdatedGit  = "Pembaruan pada artikel atau halaman ini mengikuti <i>commit</i> <a class=\"link\" href=\"https://github.com/FarrelF/Blog/commit/{{ .Hash }}\" target=\"_blank\" rel=\"noopener\">{{ .AbvHash }}</a> di GitHub"
+    readMore        = "Baca lebih lanjut >"
+    featuredImageOf = "Gambar Unggulan dari Pos {{ .Title }}"
+
+    [article.readingTime]
+        one   = "Waktu Membaca: {{ .Count }} menit"
+        other = "Waktu Membaca: {{ .Count }} menit"
+
+    [article.alert]
+        note      = "Catatan"
+        tip       = "Tips"
+        important = "Penting"
+        warning   = "Peringatan"
+        caution   = "Perhatian"
+
+    [article.codeblock]
+        copy   = "Salin"
+        copied = "Disalin!"
+
+[notFound]
+    title    = "404 - Halaman tidak ditemukan"
+    subtitle = "Halaman yang Anda akses tidak ditemukan, silakan gunakan fasilitas pencarian di bawah ini untuk mencari halaman/artikel yang tersedia di sini."
+
+[widget]
+    [widget.archives]
+        title = "Arsip"
+        more  = "Lebih"
+
+    [widget.tagCloud]
+        title = "Tag"
+
+    [widget.categoriesCloud]
+        title = "Kategori"
+
+[search]
+    title       = "Cari"
+    placeholder = "Ketik sesuatu..."
+    resultTitle = "#PAGES_COUNT halaman (#TIME_SECONDS detik)"
+
+[footer]
+    builtWith  = "Dibangun dengan {{ .Generator }}"
+    designedBy = "Tema {{ .Theme }} dirancang oleh {{ .DesignedBy }}"
+
+[cookies]
+    title             = "Persetujuan kuki"
+    text              = "Kami menggunakan kuki untuk meningkatkan pengalaman browsing Anda dan menganalisis lalu lintas situs."
+    acceptAll         = "Terima Semua"
+    deny              = "Tolak"
+    managePreferences = "Kelola preferensi"
+    settingsTitle     = "Preferensi kuki"
+    savePreferences   = "Simpan preferensi"
+    cancel            = "Batal"
+    footerLink        = "Pengaturan kuki"
+    commentsDisabled  = "Komentar dinonaktifkan sampai Anda menerima kuki fungsional."
+
+    [cookies.necessary]
+        title = "Diperlukan"
+        text  = "Kuki ini diperlukan agar situs web berfungsi dan tidak dapat dinonaktifkan."
+
+    [cookies.analytics]
+        title = "Analitik"
+        text  = "Kuki ini membantu kami memahami bagaimana pengunjung berinteraksi dengan situs web kami."
+
+    [cookies.functional]
+        title = "Fungsional"
+        text  = "Kuki ini mengaktifkan fitur seperti komentar dan konten yang disematkan."
+
+[pagination]
+    jumpToPage = "Lompat ke halaman"
+    jump       = "Pergi"
+    pressEnter = "Tekan \"Enter\" untuk melompat"

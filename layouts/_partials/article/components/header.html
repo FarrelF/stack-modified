@@ -1,0 +1,88 @@
+{{- $IsList := .IsList -}}
+{{- $Page := .Page -}}
+<header class="article-header">
+    {{- $image := partial "helper/image" (dict "Image" $Page.Params.image "Resources" $Page.Resources "Context" $Page) -}}
+    {{ if $image }}
+    <div class="article-image">
+        <a href="{{ $Page.RelPermalink }}">
+            {{- $src := $image.Permalink -}}
+            {{- $width := $image.Width -}}
+            {{- $height := $image.Height -}}
+            {{- $srcset := "" -}}
+            {{- $resource := $image.Resource -}}
+
+            {{- $ArticleInfo := dict "Title" $Page.Title "Slug" $Page.Slug "RelPermalink" $Page.RelPermalink "Date" $Page.Date -}}
+            {{- $alt := default (printf "Featured image of post %s" $Page.Title) (T "article.featuredImageOf" $ArticleInfo) -}}
+
+            {{- if $resource -}}
+                {{- $ImageURL := "" -}}
+                {{- if and ($Page.Site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
+                    {{- $ImageURL = $Page.Site.Params.CDN.Images.URL -}}
+                {{- end -}}
+
+                {{- $width = $resource.Width -}}
+                {{- $height = $resource.Height -}}
+                {{- $src = printf "%s%s" $ImageURL $resource.RelPermalink -}}
+
+                {{- if (default true $Page.Site.Params.imageProcessing.cover.enabled) -}}
+                    {{- $thumbnail := "" -}}
+                    {{- $targetWidths := slice 400 500 600 -}}
+                    {{- $mainWidth := 500 -}}
+
+                    {{- if ge $width 1600 -}}
+                        {{- $targetWidths = slice 400 800 1024 1600 -}}
+                        {{- $mainWidth = 800 -}}
+                    {{- else if ge $width 1366 -}}
+                        {{- $targetWidths = slice 400 768 1024 1366 -}}
+                        {{- $mainWidth = 768 -}}
+                    {{- else if ge $width 1024 -}}
+                        {{- $targetWidths = slice 400 768 1024 -}}
+                        {{- $mainWidth = 768 -}}
+                    {{- else if ge $width 768 -}}
+                        {{- $targetWidths = slice 400 600 768 -}}
+                        {{- $mainWidth = 600 -}}
+                    {{- end -}}
+
+                    {{- $srcSetList := slice -}}
+                    {{- range $w := $targetWidths -}}
+                        {{- $resized := $resource.Resize (printf "%dx" $w) -}}
+                        {{- $srcSetList = $srcSetList | append (printf "%s%s %dw" $ImageURL $resized.RelPermalink $w) -}}
+                        {{- if eq $w $mainWidth -}}
+                            {{- $thumbnail = $resized -}}
+                        {{- end -}}
+                    {{- end -}}
+                    {{- $srcset = delimit $srcSetList ", " -}}
+
+                    {{- if $thumbnail -}}
+                        {{- $src = printf "%s%s" $ImageURL $thumbnail.RelPermalink -}}
+                        {{- $width = $thumbnail.Width -}}
+                        {{- $height = $thumbnail.Height -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+
+            {{/* Menyusun Atribut untuk Helper v4 */}}
+            {{- $attributes := dict
+                "src" $src
+                "width" $width
+                "height" $height
+                "alt" $alt
+                "loading" "lazy"
+                "sizes" "(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px"
+            -}}
+
+            {{- if $srcset -}}
+                {{- $attributes = merge $attributes (dict "srcset" $srcset) -}}
+            {{- end -}}
+
+            {{ partial "helper/responsive-image" (dict
+                "Resource" $resource
+                "Widths" (cond (and (not $srcset) $Page.Site.Params.ImageProcessing.Content.Enabled) $Page.Site.Params.ImageProcessing.Content.Widths nil)
+                "Attributes" $attributes
+            ) }}
+        </a>
+    </div>
+    {{ end }}
+
+    {{ partial "article/components/details" (dict "Page" $Page "IsList" $IsList) }}
+</header>

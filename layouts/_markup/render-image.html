@@ -1,0 +1,76 @@
+{{- $image := partial "helper/image" (dict "Resources" .Page.Resources "Image" .Destination "Context" .Page) -}}
+{{- $alt := .PlainText | safeHTML -}}
+{{- $title := .Title | markdownify -}}
+
+{{- $resource := $image.Resource -}}
+{{- $src := $image.Permalink -}}
+{{- $srcset := "" -}}
+{{- $galleryImage := and $image.Height $image.Width -}}
+
+{{- if $resource -}}
+	{{- $notSVG := ne (path.Ext .Destination) ".svg" -}}
+	{{- $resource = $resource | resources.Fingerprint "sha256" -}}
+	
+	{{- $ImageURL := "" -}}
+	{{- $svgURL := "" -}}
+	{{- if and (.Page.Site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
+		{{- $ImageURL = .Page.Site.Params.CDN.Images.URL -}}
+	{{- end -}}
+	{{- if and (.Page.Site.Params.CDN.SVG.URL) (eq hugo.IsProduction true) -}}
+		{{- $svgURL = .Page.Site.Params.CDN.SVG.URL -}}
+	{{- end -}}
+
+	{{- if $notSVG -}}
+		{{- $src = printf "%s%s" $ImageURL $resource.RelPermalink -}}
+		{{- if eq .Page.Site.Params.CDN.Images.Permalinks false -}}
+			{{- $src = $resource.RelPermalink -}}
+		{{- end -}}
+
+		{{- if (default true .Page.Site.Params.imageProcessing.content.enabled) -}}
+			{{- $small := "" -}}
+			{{- $big := "" -}}
+			{{- if lt $image.Width 768 -}}
+				{{- $small = $resource.Resize `400x q50` -}}
+				{{- $big = $resource.Resize `500x q50` -}}
+				{{- $srcset = printf `%s%s 400w, %s%s 500w` $ImageURL $small.RelPermalink $ImageURL $big.RelPermalink -}}
+			{{- else -}}
+				{{- $small = $resource.Resize `480x q50` -}}
+				{{- $big = $resource.Resize `768x q50` -}}
+				{{- $srcset = printf `%s%s 480w, %s%s 768w` $ImageURL $small.RelPermalink $ImageURL $big.RelPermalink -}}
+			{{- end -}}
+		{{- end -}}
+	{{- else -}}
+		{{- $src = printf "%s%s" $svgURL $resource.RelPermalink -}}
+		{{- if eq .Page.Site.Params.CDN.SVG.Permalinks false -}}
+			{{- $src = $resource.RelPermalink -}}
+		{{- end -}}
+	{{- end -}}
+{{- end -}}
+
+{{- $attributes := dict -}}
+{{- if $galleryImage -}}
+	{{- $attributes = (dict 
+		"data-flex-grow" (div (mul $image.Width 100) $image.Height) 
+		"data-flex-basis" (printf "%dpx" (div (mul $image.Width 240) $image.Height))
+	) -}}
+{{- end -}}
+
+{{- if $srcset -}}
+	{{- $attributes = merge $attributes (dict "srcset" $srcset) -}}
+{{- end -}}
+
+{{ partial "helper/responsive-image" (dict 
+	"Resource" $resource
+	"Widths" (cond (and (not $srcset) .Page.Site.Params.ImageProcessing.Content.Enabled) .Page.Site.Params.ImageProcessing.Content.Widths nil)
+	"Attributes" (merge $attributes (dict 
+		"src" $src
+		"width" $image.Width
+		"height" $image.Height
+		"alt" $alt
+		"title" $title
+		"data-title-escaped" ($title | htmlEscape)
+		"class" (cond $galleryImage "gallery-image" "")
+		"loading" "lazy"
+		"sizes" "(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px"
+	))
+) }}

@@ -1,30 +1,26 @@
-{{- $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections -}}
-{{- $notHidden := where .Site.RegularPages "Params.hidden" "!=" true -}}
-{{- $filtered := ($pages | intersect $notHidden) -}}
-
+{{- $pages := partial "helper/pages.html" .Site.Home -}}
 {{- $result := slice -}}
 {{- $ImageURL := "" -}}
 
-{{- range $filtered -}}
-    {{- $data := dict "title" .Title "date" .Date "permalink" .Permalink "content" (.Plain) -}}
+{{- range $pages -}}
+    {{- $data := dict "title" .Title "date" .Date "permalink" .RelPermalink "content" (.Plain) -}}
 
-    {{- $image := partialCached "helper/image" (dict "Context" . "Type" "articleList") .RelPermalink "articleList" -}}
-    {{- if $image.exists -}}
-        {{- if .Page.Site.Params.CDN.Images.URL -}}
-            {{- $ImageURL = .Page.Site.Params.CDN.Images.URL -}}
+    {{- $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) -}}
+    {{- if $image -}}
+        {{- if $.Page.Site.Params.CDN.Images.URL -}}
+            {{- $ImageURL = $.Page.Site.Params.CDN.Images.URL -}}
         {{- end -}}
         {{- $imagePermalink := "" -}}
-        {{- if and $image.resource (default true .Page.Site.Params.imageProcessing.cover.enabled) -}}
-            {{- $thumbnail := $image.resource.Fill "120x120" -}}
-            {{- $imagePermalink = (absURL $thumbnail.Permalink) -}}
+        {{- if (default true $.Page.Site.Params.imageProcessing.cover.enabled) -}}
+            {{- $thumbnail := $image.Resource.Fill "120x120" -}}
+            {{- $imagePermalink = $thumbnail.Permalink -}}
             {{- if eq hugo.IsProduction true -}}
                 {{- $imagePermalink = printf "%s%s" $ImageURL $thumbnail.RelPermalink -}}
             {{- end -}}
         {{- else -}}
-            {{- $imagePermalink = $image.permalink -}}
+            {{- $imagePermalink = $image.Permalink -}}
         {{- end -}}
-        
-        {{- $data = merge $data (dict "image" (absURL $imagePermalink)) -}}
+        {{- $data = merge $data (dict "image" $imagePermalink) -}}
     {{- end -}}
 
     {{- $result = $result | append $data -}}
