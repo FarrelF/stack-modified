@@ -22,8 +22,8 @@ darkMode   = "Mode Gelap"
     featuredImageOf = "Gambar Unggulan dari Pos {{ .Title }}"
 
     [article.readingTime]
-        one   = "Waktu Membaca: {{ .Count }} menit"
-        other = "Waktu Membaca: {{ .Count }} menit"
+        one   = "Lama baca: {{ .Count }} menit"
+        other = "Lama baca: {{ .Count }} menit"
 
     [article.alert]
         note      = "Catatan"
