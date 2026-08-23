@@ -1,5 +1,5 @@
 {{- $opts := dict
-    "minify" hugo.IsProduction
+    "targetPath" "js/main.js"
     "params" (dict
         "codeblock" (dict
             "copy" (i18n "article.codeblock.copy")
@@ -11,30 +11,22 @@
 {{- $script := "" -}}
 {{- $customScript := "" -}}
 {{- $customOpts := "" -}}
-{{- if ne hugo.IsProduction false -}}
-    {{- $script = resources.Get "ts/main.ts" | js.Build $opts | minify | fingerprint (default "sha512" $.Site.Params.script.cryptoHash) -}}
-    {{- with resources.Get "ts/custom.ts" -}}
-        {{/* Place your custom script in HUGO_SITE_FOLDER/assets/ts/custom.ts */}}
-        {{- $customOpts = dict "targetPath" "js/custom.js" -}}
-        {{- $customScript = . | js.Build $customOpts | minify -}}
-        {{- $script = slice $script $customScript | resources.Concat "js/main.js" | minify | fingerprint (default "sha512" $.Site.Params.script.cryptoHash) -}}
-    {{- end -}}
-    {{- $Permalink = $script.RelPermalink -}}
-    {{- if .Site.Params.CDN.JS.URL -}}
-        {{- $Permalink = printf "%s%s" $.Site.Params.CDN.JS.URL $script.RelPermalink -}}
-    {{- end -}}
-{{- else -}}
-    {{- $script = resources.Get "ts/main.ts" | js.Build $opts | fingerprint (default "sha512" $.Site.Params.script.cryptoHash) -}}
-    {{- with resources.Get "ts/custom.ts" -}}
-        {{/* Place your custom script in HUGO_SITE_FOLDER/assets/ts/custom.ts */}}
-        {{- $customOpts = dict "targetPath" "js/custom.js" -}}
-        {{- $customScript = . | js.Build $customOpts -}}
-        {{- $script = slice $script $customScript | resources.Concat "js/main.js" | fingerprint (default "sha512" $.Site.Params.script.cryptoHash) -}}
-    {{- end -}}
-    {{- $Permalink = $script.RelPermalink -}}
+
+{{- $script = resources.Get "ts/main.ts" | js.Build $opts -}}
+{{- with resources.Get "ts/custom.ts" -}}
+    {{/* Place your custom script in HUGO_SITE_FOLDER/assets/ts/custom.ts */}}
+    {{- $customOpts = dict "targetPath" "js/custom.js" -}}
+    {{- $customScript = . | js.Build $customOpts -}}
+    {{- $script = slice $script $customScript | resources.Concat "js/main.js" -}}
+{{- end -}}
+{{- $script = cond hugo.IsProduction ($script | minify) $script | fingerprint (default "sha512" $.Site.Params.script.cryptoHash) -}}
+
+{{- $Permalink = $script.RelPermalink -}}
+{{- if .Site.Params.CDN.JS.URL -}}
+    {{- $Permalink = printf "%s%s" $.Site.Params.CDN.JS.URL $script.RelPermalink -}}
 {{- end -}}
 
-{{- if eq .Site.Params.Script.inlineScript false -}}
+{{- if eq $.Site.Params.Script.inlineScript false -}}
 <script type="text/javascript" src="{{- $Permalink -}}"{{- if eq .Site.Params.Script.SRIHash true -}} integrity="{{- $script.Data.Integrity -}}"{{- end -}}{{- if eq hugo.IsProduction true -}} crossorigin="anonymous"{{- end -}} defer></script>
 {{- else -}}
 <script type="text/javascript" {{- if eq .Site.Params.Script.SRIHash true -}} integrity="{{- $script.Data.Integrity -}}"{{- end -}}>{{- $script.Content | safeJS -}}</script>
