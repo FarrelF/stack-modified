@@ -1,0 +1,6 @@
+{{ $Page := .Page }}
+{{ $Index := .Index }}
+{{ $image := partial "helper/image" (dict "Image" $Page.Params.image "Resources" $Page.Resources "Context" $Page) }}
+<article class="{{ if $image }}has-image{{ end }}">
+    {{ partial "article/components/header" (dict "Page" $Page "IsList" true "Index" $Index) }}
+</article>

@@ -1,5 +1,15 @@
 {{- $IsList := .IsList -}}
 {{- $Page := .Page -}}
+{{- $Index := .Index | default 0 -}}
+
+{{- $loading := "lazy" -}}
+{{- $fetchpriority := "" -}}
+{{- if and $IsList (gt $Index 0) (le $Index 3) -}}
+    {{- $loading = "eager" -}}
+{{- end -}}
+{{- if and $IsList (eq $Index 1) -}}
+    {{- $fetchpriority = "high" -}}
+{{- end -}}
 <header class="article-header">
     {{- $image := partial "helper/image" (dict "Image" $Page.Params.image "Resources" $Page.Resources "Context" $Page) -}}
     {{ if $image }}
@@ -67,7 +77,8 @@
                 "width" $width
                 "height" $height
                 "alt" $alt
-                "loading" "lazy"
+                "loading" $loading
+                "fetchpriority" $fetchpriority
                 "sizes" "(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px"
             -}}
 
