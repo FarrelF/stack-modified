@@ -17,13 +17,13 @@ darkMode   = "Mode Gelap"
     tableOfContents = "Daftar Isi"
     relatedContent  = "Konten terkait"
     lastUpdatedOn   = "Terakhir diperbarui pada {{ .Weekday }}, {{ .Day }} {{ .Month }} {{ .Year }}, pukul {{ .Time }} WIB"
-    lastUpdatedGit  = "Pembaruan pada artikel atau halaman ini mengikuti <i>commit</i> <a class=\"link\" href=\"https://github.com/FarrelF/Blog/commit/{{ .Hash }}\" target=\"_blank\" rel=\"noopener\">{{ .AbvHash }}</a> di GitHub"
+    lastUpdatedGit  = "Pembaruan ini mengikuti <i>commit</i> <a class=\"link\" href=\"https://github.com/FarrelF/Blog/commit/{{ .Hash }}\" target=\"_blank\" rel=\"noopener\">{{ .AbvHash }}</a> di GitHub"
     readMore        = "Baca lebih lanjut >"
     featuredImageOf = "Gambar Unggulan dari Pos {{ .Title }}"
 
     [article.readingTime]
-        one   = "Lama baca: {{ .Count }} menit"
-        other = "Lama baca: {{ .Count }} menit"
+        one   = "Lama baca: {{ .Count }} mnt"
+        other = "Lama baca: {{ .Count }} mnt"
 
     [article.alert]
         note      = "Catatan"
