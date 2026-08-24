@@ -1,5 +1,6 @@
 {{- $opts := dict "format" "esm" "targetPath" "js/gallery.js" -}}
-{{- $galleryScript := cond hugo.IsProduction (resources.Get "ts/gallery.ts" | js.Build $opts | minify) (resources.Get "ts/gallery.ts" | js.Build $opts) | resources.Fingerprint "sha256" -}}
+{{- $galleryScript := resources.Get "ts/gallery.ts" | js.Build $opts -}}
+{{- $galleryScript = cond hugo.IsProduction ($galleryScript | minify) $galleryScript | resources.Fingerprint "sha256" -}}
 
 {{ $style := hugo.Data.external.PhotoSwipe.Style }}
 {{ $core := hugo.Data.external.PhotoSwipe.Core }}
