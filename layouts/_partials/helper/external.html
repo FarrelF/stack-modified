@@ -5,11 +5,11 @@
         {{- if eq .type "script" -}}
             {{- if eq $inline false -}}
             <script
-                src="{{ .src }}"
+                src="{{- .src -}}"
                 {{- with .integrity -}}
-                integrity="{{ . }}"
+                integrity="{{- . -}}"
                 {{- end -}}
-                crossorigin="{{ default `anonymous` .crossorigin }}"
+                crossorigin="{{- default `anonymous` .crossorigin -}}"
                 {{- if eq .defer true -}}
                 defer
                 {{- end -}}
@@ -33,11 +33,11 @@
             <link 
                 rel="stylesheet"
                 type="text/css"
-                href="{{ .src }}"
+                href="{{- .src -}}"
                 {{- with .integrity -}}
-                integrity="{{ . }}"
+                integrity="{{- . -}}"
                 {{- end -}}
-                crossorigin="{{ default `anonymous` .crossorigin }}"
+                crossorigin="{{- default `anonymous` .crossorigin -}}"
             >
             {{- else -}}
             {{- $file := resources.GetRemote (printf "%s" .src) | toCSS | minify -}}

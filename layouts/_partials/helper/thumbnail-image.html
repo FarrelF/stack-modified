@@ -13,7 +13,6 @@ Params:
 {{- $resize := .Resize -}}
 {{- $attributes := .Attributes | default dict -}}
 
-{{/* 1. Deteksi URL CDN Produk */}}
 {{- $ImageURL := "" -}}
 {{- if and (site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
     {{- $ImageURL = site.Params.CDN.Images.URL -}}
@@ -23,7 +22,6 @@ Params:
 {{- $isWebpSmaller := false -}}
 
 {{- if and $resize $resource (reflect.IsImageResourceProcessable $resource) $width $height -}}
-    {{/* Create thumbnail with 1x/2x descriptors */}}
     {{- $srcset := slice -}}
     {{- range (slice 1 2) -}}
         {{- $w := mul $width . -}}
@@ -31,11 +29,8 @@ Params:
         {{- if and (le $w $resource.Width) (le $h $resource.Height) -}}
             {{- $resized := $resource.Fill (printf "%dx%d" $w $h) -}}
             {{- $resizedWebp := $resource.Fill (printf "%dx%d webp" $w $h) -}}
-            
-            {{/* Prepend CDN URL ke srcset gambar standar */}}
             {{- $srcset = $srcset | append (printf "%s%s %dx" $ImageURL $resized.RelPermalink .) -}}
 
-            {{/* 2. Pemrosesan WebP & Perbandingan Ukuran File */}}
             {{- if lt (len $resizedWebp.Content) (len $resized.Content) -}}
                 {{- $isWebpSmaller = true -}}
                 {{- $webpSrcset = $webpSrcset | append (printf "%s%s %dx" $ImageURL $resizedWebp.RelPermalink .) -}}
@@ -51,17 +46,14 @@ Params:
         {{- $attributes = merge $attributes (dict "width" $width "height" $height "srcset" (delimit $srcset ", ")) -}}
     {{- end -}}
 {{- else if $resource -}}
-    {{/* Fallback jika tidak di-resize */}}
     {{- $attributes = merge $attributes (dict "src" (printf "%s%s" $ImageURL $resource.RelPermalink)) -}}
 {{- end -}}
 
-{{/* 3. Penambahan Integritas SRI Fingerprint (data-hash) */}}
 {{- if $resource -}}
     {{- $fingerprint := $resource | resources.Fingerprint "sha384" -}}
     {{- $attributes = merge $attributes (dict "data-hash" $fingerprint.Data.Integrity) -}}
 {{- end -}}
 
-{{/* 4. Render Tag HTML (Picture vs Img) */}}
 {{- if and $isWebpSmaller (gt (len $webpSrcset) 0) -}}
 <picture>
     <source srcset="{{ delimit $webpSrcset ", " }}" type="image/webp">

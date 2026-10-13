@@ -9,6 +9,6 @@
 {{- $LatoLatin_Bold_woff2 := resources.Get "fonts/Lato/LatoLatin-Bold.woff2" | fingerprint "sha256" -}}
 
 {{/* Preload fonts */}}
-<link rel="preload" as="font" type="font/woff2" href="{{ printf "%s%s" $PermalinkFonts $LatoLatin_Regular_woff2.RelPermalink }}" crossorigin>
-<link rel="preload" as="font" type="font/woff2" href="{{ printf "%s%s" $PermalinkFonts $LatoLatin_Italic_woff2.RelPermalink }}" crossorigin>
-<link rel="preload" as="font" type="font/woff2" href="{{ printf "%s%s" $PermalinkFonts $LatoLatin_Bold_woff2.RelPermalink }}" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="{{- printf "%s%s" $PermalinkFonts $LatoLatin_Regular_woff2.RelPermalink -}}" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="{{- printf "%s%s" $PermalinkFonts $LatoLatin_Italic_woff2.RelPermalink -}}" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="{{- printf "%s%s" $PermalinkFonts $LatoLatin_Bold_woff2.RelPermalink -}}" crossorigin>
