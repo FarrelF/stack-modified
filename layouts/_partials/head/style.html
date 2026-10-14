@@ -1,5 +1,6 @@
 {{- $stylePath := "scss/style.scss" -}}
 {{- $opts := dict
+    "transpiler" "dartsass"
     "enableSourceMap" hugo.IsDevelopment
     "targetPath" "css/style.css"
     "outputStyle" (cond hugo.IsDevelopment "expanded" "compressed")
