@@ -23,14 +23,45 @@
                         {{- $avatarResolution := default `300` .resolution -}}
                         {{- $avatarSmall := $avatar.Resize (printf "%dx" $avatarResolution) -}}
                         {{- $avatarPermalink := printf "%s%s" $ImageURL $avatarSmall.RelPermalink -}}
-                        {{- $avatarSmallWebp := $avatar.Resize (printf "%dx webp" $avatarResolution) -}}
-                        {{- $avatarPermalinkWebp := printf "%s%s" $ImageURL $avatarSmallWebp.RelPermalink -}}
+                        {{- $formatConfig := partial "helper/image-processing-config.html" . -}}
                         
-                        {{- if lt (len $avatarSmallWebp.Content) (len $avatarSmall.Content) -}}
+                        {{- $avatarSmallWebp := "" -}}
+                        {{- $avatarPermalinkWebp := "" -}}
+                        {{- $useWebp := false -}}
+                        {{- if $formatConfig.webpEnabled -}}
+                            {{- $avatarSmallWebp = $avatar.Resize (printf "%dx webp q%d" $avatarResolution $formatConfig.webpQuality) -}}
+                            {{- $useWebp = lt (len $avatarSmallWebp.Content) (len $avatarSmall.Content) -}}
+                            {{- if $useWebp -}}
+                                {{- $avatarPermalinkWebp = printf "%s%s" $ImageURL $avatarSmallWebp.RelPermalink -}}
+                            {{- end -}}
+                        {{- end -}}
+                        
+                        {{- $avatarSmallAvif := "" -}}
+                        {{- $avatarPermalinkAvif := "" -}}
+                        {{- $useAvif := false -}}
+                        {{- if $formatConfig.avifEnabled -}}
+                            {{- $avatarSmallAvif = $avatar.Resize (printf "%dx avif q%d" $avatarResolution $formatConfig.avifQuality) -}}
+                            {{- $useAvif = lt (len $avatarSmallAvif.Content) (len $avatarSmall.Content) -}}
+                            {{- if and $useWebp $useAvif (ge (len $avatarSmallAvif.Content) (len $avatarSmallWebp.Content)) -}}
+                                {{- $useAvif = false -}}
+                            {{- end -}}
+                            {{- if $useAvif -}}
+                                {{- $avatarPermalinkAvif = printf "%s%s" $ImageURL $avatarSmallAvif.RelPermalink -}}
+                            {{- end -}}
+                        {{- end -}}
+                        
+                        {{- if or $useAvif $useWebp -}}
                         <picture>
+                            {{- if $useAvif }}
+                            <source srcset="{{ $avatarPermalinkAvif }}"
+                                    width="{{ $avatarSmallAvif.Width }}" height="{{ $avatarSmallAvif.Height }}"
+                                    type="image/avif">
+                            {{- end }}
+                            {{- if $useWebp }}
                             <source srcset="{{ $avatarPermalinkWebp }}"
                                     width="{{ $avatarSmallWebp.Width }}" height="{{ $avatarSmallWebp.Height }}"
                                     type="image/webp">
+                            {{- end }}
                             <source srcset="{{ $avatarPermalink }}"
                                     width="{{ $avatarSmall.Width }}" height="{{ $avatarSmall.Height }}">
                             <img src="{{ $avatarPermalink }}" width="{{ $avatarSmall.Width }}"

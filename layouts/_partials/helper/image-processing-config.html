@@ -1,0 +1,49 @@
+{{- /*
+Reads the image conversion settings from the site parameters once, so every
+template uses the same values and the same defaults.
+
+    [imageProcessing.webp]
+    enabled = true
+    quality = 75
+
+    [imageProcessing.avif]
+    enabled = true
+    quality = 50
+
+    [imageProcessing.content]
+    quality = 50
+
+Returns: webpEnabled, webpQuality, avifEnabled, avifQuality, contentQuality
+
+The built-in defaults (WebP q75, AVIF q50, content fallback q50) are only used
+when the matching parameter is absent, so the theme keeps working without extra
+configuration. `isset` is used instead of `default` because `default` treats
+`false` as an empty value, which would make `enabled = false` unusable.
+*/ -}}
+
+{{- $webpEnabled := true -}}
+{{- $webpQuality := 75 -}}
+{{- with site.Params.imageProcessing.webp -}}
+    {{- if isset . "enabled" -}}{{- $webpEnabled = .enabled -}}{{- end -}}
+    {{- if isset . "quality" -}}{{- $webpQuality = .quality -}}{{- end -}}
+{{- end -}}
+
+{{- $avifEnabled := true -}}
+{{- $avifQuality := 50 -}}
+{{- with site.Params.imageProcessing.avif -}}
+    {{- if isset . "enabled" -}}{{- $avifEnabled = .enabled -}}{{- end -}}
+    {{- if isset . "quality" -}}{{- $avifQuality = .quality -}}{{- end -}}
+{{- end -}}
+
+{{- $contentQuality := 50 -}}
+{{- with site.Params.imageProcessing.content -}}
+    {{- if isset . "quality" -}}{{- $contentQuality = .quality -}}{{- end -}}
+{{- end -}}
+
+{{- return (dict
+    "webpEnabled" $webpEnabled
+    "webpQuality" $webpQuality
+    "avifEnabled" $avifEnabled
+    "avifQuality" $avifQuality
+    "contentQuality" $contentQuality
+) -}}

@@ -1,11 +1,12 @@
 {{- $image := partial "helper/image" (dict "Resources" .Page.Resources "Image" .Destination "Context" .Page) -}}
 {{- $alt := .PlainText | safeHTML -}}
 {{- $title := .Title | markdownify -}}
+{{- $formatConfig := partial "helper/image-processing-config.html" . -}}
 
 {{- $resource := $image.Resource -}}
 {{- $src := $image.Permalink -}}
-{{- $srcset := "" -}}
 {{- $galleryImage := and $image.Height $image.Width -}}
+{{- $widths := slice -}}
 
 {{- if $resource -}}
 	{{- $notSVG := ne (path.Ext .Destination) ".svg" -}}
@@ -27,16 +28,10 @@
 		{{- end -}}
 
 		{{- if (default true .Page.Site.Params.imageProcessing.content.enabled) -}}
-			{{- $small := "" -}}
-			{{- $big := "" -}}
 			{{- if lt $image.Width 768 -}}
-				{{- $small = $resource.Resize `400x q50` -}}
-				{{- $big = $resource.Resize `500x q50` -}}
-				{{- $srcset = printf `%s%s 400w, %s%s 500w` $ImageURL $small.RelPermalink $ImageURL $big.RelPermalink -}}
+				{{- $widths = slice 400 500 -}}
 			{{- else -}}
-				{{- $small = $resource.Resize `480x q50` -}}
-				{{- $big = $resource.Resize `768x q50` -}}
-				{{- $srcset = printf `%s%s 480w, %s%s 768w` $ImageURL $small.RelPermalink $ImageURL $big.RelPermalink -}}
+				{{- $widths = slice 480 768 -}}
 			{{- end -}}
 		{{- end -}}
 	{{- else -}}
@@ -55,13 +50,13 @@
 	) -}}
 {{- end -}}
 
-{{- if $srcset -}}
-	{{- $attributes = merge $attributes (dict "srcset" $srcset) -}}
-{{- end -}}
-
-{{ partial "helper/responsive-image" (dict 
+{{ partial "helper/picture.html" (dict 
 	"Resource" $resource
-	"Widths" (cond (and (not $srcset) .Page.Site.Params.ImageProcessing.Content.Enabled) .Page.Site.Params.ImageProcessing.Content.Widths nil)
+	"Mode" "resize"
+	"Widths" $widths
+	"OriginalQuality" $formatConfig.contentQuality
+	"SetImgSrc" false
+	"SetImgSrcset" true
 	"Attributes" (merge $attributes (dict 
 		"src" $src
 		"width" $image.Width

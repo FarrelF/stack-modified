@@ -1,0 +1,196 @@
+{{- /*
+Params:
+    Resource:        Hugo image resource object (Optional)
+    Mode:            "resize" (default) or "fill"
+    Widths:          Slice of target widths (for "resize")
+    Width:           Base width (for "fill")
+    Height:          Base height (for "fill")
+    Scales:          Slice of scale factors for "fill" (default: slice 1 2)
+    MainWidth:       Width used for the <img> src fallback (for "resize")
+    MainScale:       Scale used for the <img> src fallback (for "fill", default: 1)
+    OriginalQuality: Optional quality for the original-format variants
+    SetImgSrc:       Whether to set src/width/height on <img> from the main variant (default: false)
+    SetImgSrcset:    Whether to set srcset on <img> from the original-format variants (default: false)
+    Attributes:      Map of HTML attributes for the <img> tag
+
+Behaviour:
+    - Processes every requested size in the original format first.
+    - Generates WebP and AVIF variants (skipping the source format itself).
+    - A converted format is only used when it is smaller than the original-format
+      variant at every requested size (all-or-nothing per image/format).
+    - AVIF is only used when it also beats WebP at every requested size.
+    - GIF is never converted to AVIF.
+    - Loser variants are not published: RelPermalink is only called on winners.
+*/ -}}
+
+{{- $resource := .Resource -}}
+{{- $mode := .Mode | default "resize" -}}
+{{- $widths := .Widths -}}
+{{- $fillWidth := .Width -}}
+{{- $fillHeight := .Height -}}
+{{- $scales := .Scales | default (slice 1 2) -}}
+{{- $mainWidth := .MainWidth -}}
+{{- $mainScale := .MainScale | default 1 -}}
+{{- $originalQuality := .OriginalQuality -}}
+{{- $setImgSrc := .SetImgSrc | default false -}}
+{{- $setImgSrcset := .SetImgSrcset | default false -}}
+{{- $attributes := .Attributes | default dict -}}
+
+{{- $ImageURL := "" -}}
+{{- if and (site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
+    {{- $ImageURL = site.Params.CDN.Images.URL -}}
+{{- end -}}
+
+{{- $formatConfig := partial "helper/image-processing-config.html" . -}}
+{{- $webpEnabled := $formatConfig.webpEnabled -}}
+{{- $webpQuality := $formatConfig.webpQuality -}}
+{{- $avifEnabled := $formatConfig.avifEnabled -}}
+{{- $avifQuality := $formatConfig.avifQuality -}}
+
+{{- $sourceType := "" -}}
+{{- $isProcessable := false -}}
+{{- if $resource -}}
+    {{- $sourceType = $resource.MediaType.SubType -}}
+    {{- $isProcessable = reflect.IsImageResourceProcessable $resource -}}
+{{- end -}}
+{{- $genWebp := and $webpEnabled (ne $sourceType "webp") -}}
+{{- $genAvif := and $avifEnabled (ne $sourceType "avif") (ne $sourceType "gif") -}}
+
+{{- $originalVariants := slice -}}
+{{- $webpVariants := slice -}}
+{{- $avifVariants := slice -}}
+
+{{- if and $resource $isProcessable -}}
+    {{- if eq $mode "fill" -}}
+        {{- if and $fillWidth $fillHeight -}}
+            {{- range $scale := $scales -}}
+                {{- $w := mul $fillWidth $scale -}}
+                {{- $h := mul $fillHeight $scale -}}
+                {{- if and (le $w $resource.Width) (le $h $resource.Height) -}}
+                    {{- $downscale := printf "%dx%d" $w $h -}}
+                    {{- if $originalQuality -}}{{- $downscale = printf "%dx%d q%d" $w $h $originalQuality -}}{{- end -}}
+                    {{- $original := $resource.Fill $downscale -}}
+                    {{- $originalVariants = $originalVariants | append (dict "Res" $original "Descriptor" (printf "%dx" $scale) "Scale" $scale "Width" $w "Height" $h) -}}
+
+                    {{- if $genWebp -}}
+                        {{- $webp := $resource.Fill (printf "%dx%d webp q%d" $w $h $webpQuality) -}}
+                        {{- $webpVariants = $webpVariants | append (dict "Res" $webp "Descriptor" (printf "%dx" $scale)) -}}
+                    {{- end -}}
+
+                    {{- if $genAvif -}}
+                        {{- $avif := $resource.Fill (printf "%dx%d avif q%d" $w $h $avifQuality) -}}
+                        {{- $avifVariants = $avifVariants | append (dict "Res" $avif "Descriptor" (printf "%dx" $scale)) -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+    {{- else -}}
+        {{- range $w := $widths -}}
+            {{- $downscale := printf "%dx" $w -}}
+            {{- if $originalQuality -}}{{- $downscale = printf "%dx q%d" $w $originalQuality -}}{{- end -}}
+            {{- $original := $resource.Resize $downscale -}}
+            {{- $originalVariants = $originalVariants | append (dict "Res" $original "Descriptor" (printf "%dw" $w) "Width" $w) -}}
+
+            {{- if $genWebp -}}
+                {{- $webp := $resource.Resize (printf "%dx webp q%d" $w $webpQuality) -}}
+                {{- $webpVariants = $webpVariants | append (dict "Res" $webp "Descriptor" (printf "%dw" $w)) -}}
+            {{- end -}}
+
+            {{- if $genAvif -}}
+                {{- $avif := $resource.Resize (printf "%dx avif q%d" $w $avifQuality) -}}
+                {{- $avifVariants = $avifVariants | append (dict "Res" $avif "Descriptor" (printf "%dw" $w)) -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{/* All-or-nothing: a format is only used when every variant beats the original-format variant. */}}
+{{- $webpOK := and $genWebp (gt (len $webpVariants) 0) (eq (len $webpVariants) (len $originalVariants)) -}}
+{{- if $webpOK -}}
+    {{- range $i, $v := $webpVariants -}}
+        {{- if not (lt (len $v.Res.Content) (len (index $originalVariants $i).Res.Content)) -}}
+            {{- $webpOK = false -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $avifOK := and $genAvif (gt (len $avifVariants) 0) (eq (len $avifVariants) (len $originalVariants)) -}}
+{{- if $avifOK -}}
+    {{- range $i, $v := $avifVariants -}}
+        {{- if not (lt (len $v.Res.Content) (len (index $originalVariants $i).Res.Content)) -}}
+            {{- $avifOK = false -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{/* AVIF is only used when it also beats WebP at every size. */}}
+{{- if and $avifOK $webpOK -}}
+    {{- range $i, $v := $avifVariants -}}
+        {{- if not (lt (len $v.Res.Content) (len (index $webpVariants $i).Res.Content)) -}}
+            {{- $avifOK = false -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $avifSrcset := slice -}}
+{{- if $avifOK -}}
+    {{- range $v := $avifVariants -}}
+        {{- $avifSrcset = $avifSrcset | append (printf "%s%s %s" $ImageURL $v.Res.RelPermalink $v.Descriptor) -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $webpSrcset := slice -}}
+{{- if $webpOK -}}
+    {{- range $v := $webpVariants -}}
+        {{- $webpSrcset = $webpSrcset | append (printf "%s%s %s" $ImageURL $v.Res.RelPermalink $v.Descriptor) -}}
+    {{- end -}}
+{{- end -}}
+
+{{- $imgAttributes := $attributes -}}
+
+{{- if and $setImgSrc (gt (len $originalVariants) 0) -}}
+    {{- $main := index $originalVariants 0 -}}
+    {{- if eq $mode "fill" -}}
+        {{- range $v := $originalVariants -}}
+            {{- if eq $v.Scale $mainScale -}}{{- $main = $v -}}{{- end -}}
+        {{- end -}}
+        {{- $imgAttributes = merge $imgAttributes (dict "src" (printf "%s%s" $ImageURL $main.Res.RelPermalink) "width" $fillWidth "height" $fillHeight) -}}
+    {{- else -}}
+        {{- with $mainWidth -}}
+            {{- range $v := $originalVariants -}}
+                {{- if eq $v.Width $mainWidth -}}{{- $main = $v -}}{{- end -}}
+            {{- end -}}
+        {{- end -}}
+        {{- $imgAttributes = merge $imgAttributes (dict "src" (printf "%s%s" $ImageURL $main.Res.RelPermalink) "width" $main.Res.Width "height" $main.Res.Height) -}}
+    {{- end -}}
+{{- end -}}
+
+{{- if and $setImgSrcset (gt (len $originalVariants) 0) -}}
+    {{- $originalSrcset := slice -}}
+    {{- range $v := $originalVariants -}}
+        {{- $originalSrcset = $originalSrcset | append (printf "%s%s %s" $ImageURL $v.Res.RelPermalink $v.Descriptor) -}}
+    {{- end -}}
+    {{- $imgAttributes = merge $imgAttributes (dict "srcset" (delimit $originalSrcset ", ")) -}}
+{{- end -}}
+
+{{- if or $avifOK $webpOK -}}
+<picture>
+    {{- if $avifOK }}
+    <source srcset="{{ delimit $avifSrcset ", " }}" type="image/avif">
+    {{- end }}
+    {{- if $webpOK }}
+    <source srcset="{{ delimit $webpSrcset ", " }}" type="image/webp">
+    {{- end }}
+    <img {{- range $k, $v := $imgAttributes -}}
+        {{- if $v -}}
+            {{- printf " %s=%q" (lower $k) (printf "%v" $v) | safeHTMLAttr -}}
+        {{- end -}}
+    {{- end -}}>
+</picture>
+{{- else -}}
+<img {{- range $k, $v := $imgAttributes -}}
+    {{- if $v -}}
+        {{- printf " %s=%q" (lower $k) (printf "%v" $v) | safeHTMLAttr -}}
+    {{- end -}}
+{{- end -}}>
+{{- end -}}

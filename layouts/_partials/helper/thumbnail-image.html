@@ -13,55 +13,29 @@ Params:
 {{- $resize := .Resize -}}
 {{- $attributes := .Attributes | default dict -}}
 
-{{- $ImageURL := "" -}}
-{{- if and (site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
-    {{- $ImageURL = site.Params.CDN.Images.URL -}}
-{{- end -}}
-
-{{- $webpSrcset := slice -}}
-{{- $isWebpSmaller := false -}}
-
 {{- if and $resize $resource (reflect.IsImageResourceProcessable $resource) $width $height -}}
-    {{- $srcset := slice -}}
-    {{- range (slice 1 2) -}}
-        {{- $w := mul $width . -}}
-        {{- $h := mul $height . -}}
-        {{- if and (le $w $resource.Width) (le $h $resource.Height) -}}
-            {{- $resized := $resource.Fill (printf "%dx%d" $w $h) -}}
-            {{- $resizedWebp := $resource.Fill (printf "%dx%d webp" $w $h) -}}
-            {{- $srcset = $srcset | append (printf "%s%s %dx" $ImageURL $resized.RelPermalink .) -}}
-
-            {{- if lt (len $resizedWebp.Content) (len $resized.Content) -}}
-                {{- $isWebpSmaller = true -}}
-                {{- $webpSrcset = $webpSrcset | append (printf "%s%s %dx" $ImageURL $resizedWebp.RelPermalink .) -}}
-            {{- end -}}
-
-            {{- if eq . 1 -}}
-                {{- $attributes = merge $attributes (dict "src" (printf "%s%s" $ImageURL $resized.RelPermalink)) -}}
-            {{- end -}}
+    {{ partial "helper/picture.html" (dict
+        "Resource" $resource
+        "Mode" "fill"
+        "Width" $width
+        "Height" $height
+        "Scales" (slice 1 2)
+        "MainScale" 1
+        "SetImgSrc" true
+        "SetImgSrcset" true
+        "Attributes" $attributes
+    ) }}
+{{- else -}}
+    {{- if $resource -}}
+        {{- $ImageURL := "" -}}
+        {{- if and (site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
+            {{- $ImageURL = site.Params.CDN.Images.URL -}}
         {{- end -}}
+        {{- $attributes = merge $attributes (dict "src" (printf "%s%s" $ImageURL $resource.RelPermalink)) -}}
     {{- end -}}
-    
-    {{- if gt (len $srcset) 0 -}}
-        {{- $attributes = merge $attributes (dict "width" $width "height" $height "srcset" (delimit $srcset ", ")) -}}
-    {{- end -}}
-{{- else if $resource -}}
-    {{- $attributes = merge $attributes (dict "src" (printf "%s%s" $ImageURL $resource.RelPermalink)) -}}
-{{- end -}}
-
-{{- if and $isWebpSmaller (gt (len $webpSrcset) 0) -}}
-<picture>
-    <source srcset="{{ delimit $webpSrcset ", " }}" type="image/webp">
     <img {{- range $k, $v := $attributes -}}
         {{- if $v -}}
             {{- printf " %s=%q" (lower $k) (printf "%v" $v) | safeHTMLAttr -}}
         {{- end -}}
     {{- end -}}>
-</picture>
-{{- else -}}
-<img {{- range $k, $v := $attributes -}}
-    {{- if $v -}}
-        {{- printf " %s=%q" (lower $k) (printf "%v" $v) | safeHTMLAttr -}}
-    {{- end -}}
-{{- end -}}>
 {{- end -}}

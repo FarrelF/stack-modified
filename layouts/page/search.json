@@ -1,6 +1,7 @@
 {{- $pages := partial "helper/pages.html" .Site.Home -}}
 {{- $result := slice -}}
 {{- $ImageURL := "" -}}
+{{- $formatConfig := partial "helper/image-processing-config.html" . -}}
 
 {{- range $pages -}}
     {{- $data := dict "title" .Title "date" .Date "permalink" .RelPermalink "content" (.Plain) -}}
@@ -13,10 +14,23 @@
         {{- $imagePermalink := "" -}}
         {{- with $image.Resource -}}
             {{- if reflect.IsImageResourceProcessable . -}}
-                {{- $thumbnail := .Fill "120x120" -}}
-                {{- $imagePermalink = $thumbnail.Permalink -}}
+                {{- $best := .Fill "120x120" -}}
+                {{- $subType := .MediaType.SubType -}}
+                {{- if and $formatConfig.webpEnabled (ne $subType "webp") -}}
+                    {{- $webp := .Fill (printf "120x120 webp q%d" $formatConfig.webpQuality) -}}
+                    {{- if lt (len $webp.Content) (len $best.Content) -}}
+                        {{- $best = $webp -}}
+                    {{- end -}}
+                {{- end -}}
+                {{- if and $formatConfig.avifEnabled (ne $subType "avif") (ne $subType "gif") -}}
+                    {{- $avif := .Fill (printf "120x120 avif q%d" $formatConfig.avifQuality) -}}
+                    {{- if lt (len $avif.Content) (len $best.Content) -}}
+                        {{- $best = $avif -}}
+                    {{- end -}}
+                {{- end -}}
+                {{- $imagePermalink = $best.Permalink -}}
                 {{- if and $ImageURL (eq hugo.IsProduction true) -}}
-                    {{- $imagePermalink = printf "%s%s" $ImageURL $thumbnail.RelPermalink -}}
+                    {{- $imagePermalink = printf "%s%s" $ImageURL $best.RelPermalink -}}
                 {{- end -}}
             {{- else -}}
                 {{- $imagePermalink = .RelPermalink | absURL -}}
