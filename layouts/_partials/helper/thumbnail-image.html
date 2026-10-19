@@ -49,11 +49,6 @@ Params:
     {{- $attributes = merge $attributes (dict "src" (printf "%s%s" $ImageURL $resource.RelPermalink)) -}}
 {{- end -}}
 
-{{- if $resource -}}
-    {{- $fingerprint := $resource | resources.Fingerprint "sha384" -}}
-    {{- $attributes = merge $attributes (dict "data-hash" $fingerprint.Data.Integrity) -}}
-{{- end -}}
-
 {{- if and $isWebpSmaller (gt (len $webpSrcset) 0) -}}
 <picture>
     <source srcset="{{ delimit $webpSrcset ", " }}" type="image/webp">

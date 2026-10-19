@@ -34,8 +34,13 @@
         {{- $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) -}}
         {{ if $image }}
         {{- $ImageURL := $image.Permalink -}}
-        {{- if and (.Page.Site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
-            {{- $ImageURL = printf "%s%s" .Page.Site.Params.CDN.Images.URL $image.RelPermalink -}}
+        {{- if not $image.Resource -}}
+            {{- if not (strings.HasPrefix $ImageURL "http") -}}
+                {{- $ImageURL = $ImageURL | relURL -}}
+                {{- if and (.Page.Site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
+                    {{- $ImageURL = printf "%s%s" .Page.Site.Params.CDN.Images.URL $ImageURL -}}
+                {{- end -}}
+            {{- end -}}
         {{- end -}}
         <div class="article-image">
             {{ partial "helper/thumbnail-image" (dict 

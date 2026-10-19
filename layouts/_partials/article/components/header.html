@@ -24,7 +24,7 @@
             {{- $ArticleInfo := dict "Title" $Page.Title "Slug" $Page.Slug "RelPermalink" $Page.RelPermalink "Date" $Page.Date -}}
             {{- $alt := default (printf "Featured image of post %s" $Page.Title) (T "article.featuredImageOf" $ArticleInfo) -}}
 
-            {{- if $resource -}}
+            {{- if and $resource (reflect.IsImageResourceProcessable $resource) -}}
                 {{- $ImageURL := "" -}}
                 {{- if and ($Page.Site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
                     {{- $ImageURL = $Page.Site.Params.CDN.Images.URL -}}
@@ -32,7 +32,6 @@
 
                 {{- $width = $resource.Width -}}
                 {{- $height = $resource.Height -}}
-                {{- $src = printf "%s%s" $ImageURL $resource.RelPermalink -}}
 
                 {{- if (default true $Page.Site.Params.imageProcessing.cover.enabled) -}}
                     {{- $thumbnail := "" -}}
@@ -68,6 +67,11 @@
                         {{- $width = $thumbnail.Width -}}
                         {{- $height = $thumbnail.Height -}}
                     {{- end -}}
+                {{- else -}}
+                    {{- $fallback := $resource.Resize "800x" -}}
+                    {{- $src = printf "%s%s" $ImageURL $fallback.RelPermalink -}}
+                    {{- $width = $fallback.Width -}}
+                    {{- $height = $fallback.Height -}}
                 {{- end -}}
             {{- end -}}
 

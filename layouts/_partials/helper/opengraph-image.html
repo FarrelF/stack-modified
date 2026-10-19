@@ -1,0 +1,33 @@
+{{- $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) -}}
+{{- $result := "" -}}
+
+{{- with $image -}}
+    {{- with .Resource -}}
+        {{- if reflect.IsImageResourceProcessable . -}}
+            {{- $resized := .Resize "1200x" -}}
+            {{- if and site.Params.CDN.Images.URL hugo.IsProduction -}}
+                {{/* RelPermalink is site-relative, so it can be safely prefixed with the CDN base URL. */}}
+                {{- $result = printf "%s%s" site.Params.CDN.Images.URL $resized.RelPermalink -}}
+            {{- else -}}
+                {{/* Without a CDN, social metadata needs an absolute URL. */}}
+                {{- $result = $resized.Permalink -}}
+            {{- end -}}
+        {{- else -}}
+            {{- $result = .RelPermalink | absURL -}}
+        {{- end -}}
+    {{- else -}}
+        {{- $original := .Permalink -}}
+        {{- if strings.HasPrefix $original "http" -}}
+            {{- $result = $original -}}
+        {{- else -}}
+            {{- $original = $original | relURL -}}
+            {{- if and site.Params.CDN.Images.URL hugo.IsProduction -}}
+                {{- $result = printf "%s%s" site.Params.CDN.Images.URL $original -}}
+            {{- else -}}
+                {{- $result = $original | absURL -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- return $result -}}
