@@ -4,6 +4,7 @@ Slug:
 Author: Farrel Franqois
 Categories: 
 Image:
+ImageHint: # photo (default), picture, drawing, icon, text
 Date: {{ .Date }}
 License:
 Math: 
