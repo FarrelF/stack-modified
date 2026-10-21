@@ -6,6 +6,7 @@
     <div class="article-image">
         <a href="{{ $Page.RelPermalink }}">
             {{- $resource := $image.Resource -}}
+            {{- $hint := $Page.Params.imageHint -}}
 
             {{- $ArticleInfo := dict "Title" $Page.Title "Slug" $Page.Slug "RelPermalink" $Page.RelPermalink "Date" $Page.Date -}}
             {{- $alt := default (printf "Featured image of post %s" $Page.Title) (T "article.featuredImageOf" $ArticleInfo) -}}
@@ -47,6 +48,7 @@
                         "Mode" "resize"
                         "Widths" $targetWidths
                         "MainWidth" $mainWidth
+                        "Hint" $hint
                         "SetImgSrc" true
                         "SetImgSrcset" true
                         "Attributes" $attributes
@@ -57,6 +59,7 @@
                         "Resource" $resource
                         "Mode" "resize"
                         "Widths" nil
+                        "Hint" $hint
                         "SetImgSrc" false
                         "SetImgSrcset" false
                         "Attributes" (merge $attributes (dict

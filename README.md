@@ -25,6 +25,34 @@ gh repo clone FarrelF/stack-modified FarrelF/stack-modified
 
 Setelah Anda mengkloningnya, terutama dengan perintah di atas, berkas-berkas tersebut akan tersimpan di dalam folder `FarrelF/stack-modified` secara otomatis.
 
+## Pemrosesan Gambar
+
+Tema ini membuat varian WebP dan AVIF untuk gambar yang diproses oleh Hugo. Varian tersebut hanya dipakai jika ukurannya lebih kecil dari format asli, dan AVIF juga harus lebih kecil dari WebP pada semua lebar.
+
+### Hint encoder
+
+Nilai `hint` yang didukung adalah `photo` (default), `picture`, `drawing`, `icon`, dan `text`.
+
+Untuk gambar unggulan (_featured image_), gunakan parameter `imageHint` di front matter:
+
+```yaml
+image: cover.png
+imageHint: text
+```
+
+Untuk gambar di Markdown, titipkan hint pada title gambar:
+
+```markdown
+![Screenshot](screenshot.png "hint:text")
+![Logo](logo.png "hint:icon|Logo caption")
+```
+
+Awalan `hint:` akan dihapus sebelum title dirender. Jika ada tanda `|`, teks setelahnya tetap dipakai sebagai caption. Hint diterapkan ke varian WebP dan AVIF, bukan ke format asli.
+
+Rekomendasi: `photo` untuk foto/avatar, `text` atau `drawing` untuk screenshot/teks, dan `icon` atau `text` untuk logo. Jangan set `text` secara global karena ukuran WebP bisa membengkak.
+
+Hint sengaja tidak memakai atribut Goldmark `{hint="text"}` karena itu memerlukan perubahan struktur HTML dan penyesuaian galeri; sintaks title dipilih agar PhotoSwipe tetap aman.
+
 ## Cara Kontribusi
 Jika Anda ingin mengubah kode sumber untuk memodifikasi tema ini, pertama-tama pastikan bahwa Anda telah mempelajari struktur direktori Hugo.
 

@@ -4,6 +4,7 @@ Params:
     Width: Image width (Required)
     Height: Image height (Required)
     Resize: Whether to perform resize (Optional, default: false)
+    Hint: WebP/AVIF content hint (Optional)
     Attributes: Map of HTML attributes for the <img> tag
 */ -}}
 
@@ -11,6 +12,7 @@ Params:
 {{- $width := .Width -}}
 {{- $height := .Height -}}
 {{- $resize := .Resize -}}
+{{- $hint := .Hint -}}
 {{- $attributes := .Attributes | default dict -}}
 
 {{- if and $resize $resource (reflect.IsImageResourceProcessable $resource) $width $height -}}
@@ -21,6 +23,7 @@ Params:
         "Height" $height
         "Scales" (slice 1 2)
         "MainScale" 1
+        "Hint" $hint
         "SetImgSrc" true
         "SetImgSrcset" true
         "Attributes" $attributes

@@ -1,6 +1,27 @@
+{{- /*
+Markdown images may carry an encoder hint in the title:
+
+    ![alt](image.png "hint:text")
+    ![alt](image.png "hint:icon|Optional caption")
+
+The `hint:` prefix is removed before the title is rendered. Supported values:
+photo, picture, drawing, icon, text. A page's featured image uses the
+`imageHint` front matter parameter instead.
+*/ -}}
 {{- $image := partial "helper/image" (dict "Resources" .Page.Resources "Image" .Destination "Context" .Page) -}}
 {{- $alt := .PlainText | safeHTML -}}
-{{- $title := .Title | markdownify -}}
+{{- $titleRaw := .Title -}}
+{{- $hint := "" -}}
+{{- if findRE `(?i)^hint\s*[:=]` $titleRaw 1 -}}
+	{{- $hintSpec := replaceRE `(?i)^hint\s*[:=]\s*` "" $titleRaw -}}
+	{{- $hintParts := split $hintSpec "|" -}}
+	{{- $hint = strings.TrimSpace (index $hintParts 0) -}}
+	{{- $titleRaw = "" -}}
+	{{- if gt (len $hintParts) 1 -}}
+		{{- $titleRaw = strings.TrimSpace (delimit (after 1 $hintParts) "|") -}}
+	{{- end -}}
+{{- end -}}
+{{- $title := $titleRaw | markdownify -}}
 {{- $formatConfig := partial "helper/image-processing-config.html" . -}}
 
 {{- $resource := $image.Resource -}}
@@ -55,6 +76,7 @@
 	"Mode" "resize"
 	"Widths" $widths
 	"OriginalQuality" $formatConfig.contentQuality
+	"Hint" $hint
 	"SetImgSrc" false
 	"SetImgSrcset" true
 	"Attributes" (merge $attributes (dict 

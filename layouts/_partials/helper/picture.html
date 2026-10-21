@@ -9,6 +9,7 @@ Params:
     MainWidth:       Width used for the <img> src fallback (for "resize")
     MainScale:       Scale used for the <img> src fallback (for "fill", default: 1)
     OriginalQuality: Optional quality for the original-format variants
+    Hint:            Optional WebP/AVIF content hint: photo, picture, drawing, icon, or text
     SetImgSrc:       Whether to set src/width/height on <img> from the main variant (default: false)
     SetImgSrcset:    Whether to set srcset on <img> from the original-format variants (default: false)
     Attributes:      Map of HTML attributes for the <img> tag
@@ -32,6 +33,14 @@ Behaviour:
 {{- $mainWidth := .MainWidth -}}
 {{- $mainScale := .MainScale | default 1 -}}
 {{- $originalQuality := .OriginalQuality -}}
+{{- $hint := "" -}}
+{{- with .Hint -}}{{- $hint = lower (strings.TrimSpace (printf "%v" .)) -}}{{- end -}}
+{{- $validHints := slice "photo" "picture" "drawing" "icon" "text" -}}
+{{- if and $hint (not (in $validHints $hint)) -}}
+    {{- errorf "Invalid image hint %q; expected one of: %s" $hint (delimit $validHints ", ") -}}
+{{- end -}}
+{{- $hintToken := "" -}}
+{{- if $hint -}}{{- $hintToken = printf " %s" $hint -}}{{- end -}}
 {{- $setImgSrc := .SetImgSrc | default false -}}
 {{- $setImgSrcset := .SetImgSrcset | default false -}}
 {{- $attributes := .Attributes | default dict -}}
@@ -73,12 +82,12 @@ Behaviour:
                     {{- $originalVariants = $originalVariants | append (dict "Res" $original "Descriptor" (printf "%dx" $scale) "Scale" $scale "Width" $w "Height" $h) -}}
 
                     {{- if $genWebp -}}
-                        {{- $webp := $resource.Fill (printf "%dx%d webp q%d" $w $h $webpQuality) -}}
+                        {{- $webp := $resource.Fill (printf "%dx%d webp q%d%s" $w $h $webpQuality $hintToken) -}}
                         {{- $webpVariants = $webpVariants | append (dict "Res" $webp "Descriptor" (printf "%dx" $scale)) -}}
                     {{- end -}}
 
                     {{- if $genAvif -}}
-                        {{- $avif := $resource.Fill (printf "%dx%d avif q%d" $w $h $avifQuality) -}}
+                        {{- $avif := $resource.Fill (printf "%dx%d avif q%d%s" $w $h $avifQuality $hintToken) -}}
                         {{- $avifVariants = $avifVariants | append (dict "Res" $avif "Descriptor" (printf "%dx" $scale)) -}}
                     {{- end -}}
                 {{- end -}}
@@ -92,12 +101,12 @@ Behaviour:
             {{- $originalVariants = $originalVariants | append (dict "Res" $original "Descriptor" (printf "%dw" $w) "Width" $w) -}}
 
             {{- if $genWebp -}}
-                {{- $webp := $resource.Resize (printf "%dx webp q%d" $w $webpQuality) -}}
+                {{- $webp := $resource.Resize (printf "%dx webp q%d%s" $w $webpQuality $hintToken) -}}
                 {{- $webpVariants = $webpVariants | append (dict "Res" $webp "Descriptor" (printf "%dw" $w)) -}}
             {{- end -}}
 
             {{- if $genAvif -}}
-                {{- $avif := $resource.Resize (printf "%dx avif q%d" $w $avifQuality) -}}
+                {{- $avif := $resource.Resize (printf "%dx avif q%d%s" $w $avifQuality $hintToken) -}}
                 {{- $avifVariants = $avifVariants | append (dict "Res" $avif "Descriptor" (printf "%dw" $w)) -}}
             {{- end -}}
         {{- end -}}
