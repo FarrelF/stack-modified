@@ -1,0 +1,43 @@
+{{- if eq .Site.Params.webmcp.enabled true -}}
+    {{- $searchIndex := "" -}}
+
+    {{- with .Site.Params.webmcp.searchIndex -}}
+        {{- $searchIndex = . -}}
+    {{- else -}}
+        {{/* Reuse the existing Stack search index. The search page is the page
+             that uses the "search" layout and exposes a JSON output format. */}}
+        {{- range .Site.Pages -}}
+            {{- if and (eq .Layout "search") (not $searchIndex) -}}
+                {{- with .OutputFormats.Get "json" -}}
+                    {{- $searchIndex = .RelPermalink -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+
+        {{- if not $searchIndex -}}
+            {{- with .Site.Home.OutputFormats.Get "json" -}}
+                {{- $searchIndex = .RelPermalink -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+
+    {{- $config := dict
+        "site" (dict
+            "title" .Site.Title
+            "url" .Site.Home.Permalink
+            "language" .Site.Language.Locale
+        )
+    -}}
+
+    {{- with $searchIndex -}}
+        {{- $config = merge $config (dict "searchIndex" .) -}}
+    {{- end -}}
+
+    {{- $mainSections := .Site.Params.mainSections | default (slice "post") -}}
+    {{- if and .IsPage (in $mainSections .Section) -}}
+        {{- $config = merge $config (dict "article" (partial "webmcp/article.html" .)) -}}
+    {{- end -}}
+
+    {{/* The WebMCP bundle is concatenated into js/main.js by footer/components/script.html. */}}
+    <script type="application/json" id="webmcp-config">{{ $config | jsonify | safeJS }}</script>
+{{- end -}}

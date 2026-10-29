@@ -1,0 +1,40 @@
+{{- $page := . -}}
+{{- $canonical := $page.Permalink -}}
+{{- with $page.Params.canonicalUrl -}}
+    {{- $canonical = . -}}
+{{- end -}}
+
+{{- $published := "" -}}
+{{- if not $page.Date.IsZero -}}
+    {{- $published = $page.Date.Format "2006-01-02T15:04:05Z07:00" -}}
+{{- end -}}
+
+{{- $updated := "" -}}
+{{- if not $page.Lastmod.IsZero -}}
+    {{- $updated = $page.Lastmod.Format "2006-01-02T15:04:05Z07:00" -}}
+{{- end -}}
+
+{{- $authors := partial "webmcp/authors.html" $page.Params.author -}}
+{{- if not $authors -}}
+    {{- $authors = partial "webmcp/authors.html" $page.Site.Params.author -}}
+{{- end -}}
+
+{{- $headings := slice -}}
+{{- with $page.Fragments.Headings -}}
+    {{- $headings = partial "webmcp/headings.html" . -}}
+{{- end -}}
+
+{{- $data := dict
+    "title" $page.Title
+    "url" $canonical
+    "description" (partial "data/description" $page)
+    "published" $published
+    "updated" $updated
+    "authors" $authors
+    "section" $page.Section
+    "tags" (partial "helper/terms.html" (dict "Page" $page "Taxonomy" "tags"))
+    "categories" (partial "helper/terms.html" (dict "Page" $page "Taxonomy" "categories"))
+    "headings" $headings
+-}}
+
+{{- return $data -}}

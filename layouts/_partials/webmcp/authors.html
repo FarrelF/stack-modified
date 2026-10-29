@@ -1,0 +1,17 @@
+{{- $authors := slice -}}
+
+{{- with . -}}
+    {{- if reflect.IsSlice . -}}
+        {{- range . -}}
+            {{- $authors = $authors | append (string .) -}}
+        {{- end -}}
+    {{- else if reflect.IsMap . -}}
+        {{- with .name -}}
+            {{- $authors = $authors | append (string .) -}}
+        {{- end -}}
+    {{- else -}}
+        {{- $authors = $authors | append (string .) -}}
+    {{- end -}}
+{{- end -}}
+
+{{- return $authors -}}

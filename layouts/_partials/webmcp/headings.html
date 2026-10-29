@@ -1,0 +1,17 @@
+{{- $headings := slice -}}
+
+{{- range . -}}
+    {{- if .Title -}}
+        {{- $headings = $headings | append (dict
+            "id" .ID
+            "title" (.Title | plainify)
+            "level" .Level
+        ) -}}
+    {{- end -}}
+
+    {{- with .Headings -}}
+        {{- $headings = $headings | append (partial "webmcp/headings.html" .) -}}
+    {{- end -}}
+{{- end -}}
+
+{{- return $headings -}}

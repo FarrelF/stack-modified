@@ -9,15 +9,21 @@
 -}}
 {{- $Permalink := "" -}}
 {{- $script := "" -}}
-{{- $customScript := "" -}}
-{{- $customOpts := "" -}}
 
 {{- $script = resources.Get "ts/main.ts" | js.Build $opts -}}
+{{- $scripts := slice $script -}}
 {{- with resources.Get "ts/custom.ts" -}}
     {{/* Place your custom script in HUGO_SITE_FOLDER/assets/ts/custom.ts */}}
-    {{- $customOpts = dict "targetPath" "js/custom.js" -}}
-    {{- $customScript = . | js.Build $customOpts -}}
-    {{- $script = slice $script $customScript | resources.Concat "js/main.js" -}}
+    {{- $customScript := . | js.Build (dict "targetPath" "js/custom.js") -}}
+    {{- $scripts = $scripts | append $customScript -}}
+{{- end -}}
+{{- if eq .Site.Params.webmcp.enabled true -}}
+    {{/* Bundle WebMCP into the main script so it does not add another request. */}}
+    {{- $webmcpScript := resources.Get "ts/webmcp.ts" | js.Build (dict "targetPath" "js/webmcp.js") -}}
+    {{- $scripts = $scripts | append $webmcpScript -}}
+{{- end -}}
+{{- if gt (len $scripts) 1 -}}
+    {{- $script = $scripts | resources.Concat "js/main.js" -}}
 {{- end -}}
 {{- $script = cond hugo.IsProduction ($script | minify) $script | fingerprint (default "sha512" $.Site.Params.script.cryptoHash) -}}
 

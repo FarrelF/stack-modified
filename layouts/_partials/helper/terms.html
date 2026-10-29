@@ -1,0 +1,7 @@
+{{- $terms := slice -}}
+
+{{- range .Page.GetTerms .Taxonomy -}}
+    {{- $terms = $terms | append .LinkTitle -}}
+{{- end -}}
+
+{{- return $terms -}}

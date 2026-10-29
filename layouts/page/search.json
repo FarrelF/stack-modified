@@ -4,7 +4,16 @@
 {{- $formatConfig := partial "helper/image-processing-config.html" . -}}
 
 {{- range $pages -}}
-    {{- $data := dict "title" .Title "date" .Date "permalink" .RelPermalink "content" (.Plain) -}}
+    {{- $data := dict
+        "title" .Title
+        "date" .Date
+        "permalink" .RelPermalink
+        "content" (.Plain)
+        "section" .Section
+        "tags" (partial "helper/terms.html" (dict "Page" . "Taxonomy" "tags"))
+        "categories" (partial "helper/terms.html" (dict "Page" . "Taxonomy" "categories"))
+        "description" (partial "data/description" .)
+    -}}
 
     {{- $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) -}}
     {{- if $image -}}

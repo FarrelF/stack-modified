@@ -53,6 +53,32 @@ Rekomendasi: `photo` untuk foto/avatar, `text` atau `drawing` untuk screenshot/t
 
 Hint sengaja tidak memakai atribut Goldmark `{hint="text"}` karena itu memerlukan perubahan struktur HTML dan penyesuaian galeri; sintaks title dipilih agar PhotoSwipe tetap aman.
 
+## Dukungan WebMCP
+
+Tema ini menyediakan dukungan opsional untuk [WebMCP](https://developer.chrome.com/docs/ai/webmcp), API eksperimental yang memungkinkan agen peramban menemukan dan memanggil fitur situs melalui `document.modelContext`.
+
+Fitur ini nonaktif secara bawaan. Aktifkan di konfigurasi situs:
+
+```toml
+[webmcp]
+enabled = true
+```
+
+Saat aktif, tema mendaftarkan dua _tool_ baca-saja:
+
+- `search_site(query, limit)` -- mencari memakai indeks pencarian Stack yang sudah ada, yaitu halaman yang memakai `layout: "search"` dan menyediakan output `json`. Hasilnya memuat judul, URL, tanggal, bagian, tag, kategori, dan kutipan singkat.
+- `get_current_article()` -- mengembalikan metadata artikel yang sedang dibuka, meliputi judul, URL kanonis, deskripsi, tanggal terbit dan pembaruan, penulis, bagian, tag, kategori, serta daftar _heading_.
+
+_Tool_ hanya didaftarkan jika `document.modelContext` tersedia, sehingga peramban tanpa dukungan WebMCP tidak terpengaruh. Saat diaktifkan, skrip WebMCP digabungkan ke bundel `main.js` yang sudah ada sehingga tidak menambah permintaan HTTP. Kode _tool_ berada di [`assets/ts/webmcp.ts`](assets/ts/webmcp.ts) dan partial terkait berada di [`layouts/_partials/webmcp/`](layouts/_partials/webmcp/).
+
+Jika halaman pencarian tidak memakai _layout_ `search`, setel path indeks secara eksplisit:
+
+```toml
+[webmcp]
+enabled = true
+searchIndex = "cari/index.json"
+```
+
 ## Cara Kontribusi
 Jika Anda ingin mengubah kode sumber untuk memodifikasi tema ini, pertama-tama pastikan bahwa Anda telah mempelajari struktur direktori Hugo.
 
