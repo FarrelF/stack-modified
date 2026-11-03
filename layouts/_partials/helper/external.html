@@ -1,9 +1,12 @@
 {{- $List := index hugo.Data.external .Namespace -}}
+{{- $bundle := partialCached "helper/external-bundle" .Context "external-bundle" -}}
 {{- with $List -}}
     {{- range . -}}
         {{- $inline := default false .inline -}}
         {{- if eq .type "script" -}}
-            {{- if eq $inline false -}}
+            {{- if in $bundle.bundled .src -}}
+            {{- /* Already concatenated into js/main.js by footer/components/script.html. */ -}}
+            {{- else if eq $inline false -}}
             <script
                 src="{{- .src -}}"
                 {{- with .integrity -}}

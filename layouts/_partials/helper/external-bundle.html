@@ -1,0 +1,92 @@
+{{- /*
+    Collect external scripts marked with `bundle = true` so that
+    footer/components/script.html can concatenate them into js/main.js.
+
+    Returns a dict:
+      - scripts: slice of remote resources to concatenate
+      - bundled: slice of src strings that must not be emitted separately
+
+    Notes:
+      - Only JavaScript is supported. CSS bundling is not implemented yet.
+      - `integrity` is optional. When present and external.verifyIntegrity is
+        true, the downloaded bytes are verified at build time; a mismatch
+        fails the build.
+      - A download failure falls back to a separate <script> request.
+      - `inline = true`, `script.inlineScript = true`, and ESM entries are not
+        bundled.
+*/ -}}
+{{- $enabled := default false .Site.Params.external.bundle -}}
+{{- $verify := default true .Site.Params.external.verifyIntegrity -}}
+{{- $scripts := slice -}}
+{{- $bundled := slice -}}
+
+{{- if eq $enabled true -}}
+    {{- if eq .Site.Params.script.inlineScript true -}}
+        {{- warnf "external.bundle is enabled, but script.inlineScript is true; external scripts will not be bundled into main.js" -}}
+    {{- else -}}
+        {{- $algorithms := slice "md5" "sha256" "sha384" "sha512" -}}
+        {{- range $namespace, $list := hugo.Data.external -}}
+            {{- if reflect.IsSlice $list -}}
+                {{- range $list -}}
+                    {{- $shouldBundle := default false .bundle -}}
+                    {{- if eq $shouldBundle true -}}
+                        {{- $src := printf "%s" .src -}}
+                        {{- if not (in $bundled $src) -}}
+                            {{- if eq .type "script" -}}
+                                {{- $inline := default false .inline -}}
+                                {{- if eq $inline true -}}
+                                    {{- warnf "external.bundle: %q has bundle = true but inline = true; it will not be bundled" $src -}}
+                                {{- else -}}
+                                    {{- $resource := false -}}
+                                    {{- $error := "" -}}
+                                    {{- with try (resources.GetRemote $src) -}}
+                                        {{- with .Err -}}
+                                            {{- $error = printf "%s" . -}}
+                                        {{- else -}}
+                                            {{- $resource = .Value -}}
+                                        {{- end -}}
+                                    {{- end -}}
+                                    {{- if $resource -}}
+                                        {{- $integrity := strings.TrimSpace (default "" .integrity) -}}
+                                        {{- if and $verify $integrity -}}
+                                            {{- $verified := false -}}
+                                            {{- $computed := "" -}}
+                                            {{- range $token := split $integrity " " -}}
+                                                {{- $token = strings.TrimSpace $token -}}
+                                                {{- if $token -}}
+                                                    {{- $algorithm := index (split $token "-") 0 -}}
+                                                    {{- if in $algorithms $algorithm -}}
+                                                        {{- $fingerprinted := $resource | fingerprint $algorithm -}}
+                                                        {{- if eq $fingerprinted.Data.Integrity $token -}}
+                                                            {{- $verified = true -}}
+                                                        {{- else if not $computed -}}
+                                                            {{- $computed = $fingerprinted.Data.Integrity -}}
+                                                        {{- end -}}
+                                                    {{- else -}}
+                                                        {{- errorf "external.bundle: %q declares an unsupported integrity algorithm %q; supported algorithms: %s" $src $algorithm (delimit $algorithms ", ") -}}
+                                                    {{- end -}}
+                                                {{- end -}}
+                                            {{- end -}}
+                                            {{- if not $verified -}}
+                                                {{- errorf "external.bundle: integrity mismatch for %q; declared %q, computed %q" $src $integrity $computed -}}
+                                            {{- end -}}
+                                        {{- end -}}
+                                        {{- $scripts = $scripts | append $resource -}}
+                                        {{- $bundled = $bundled | append $src -}}
+                                    {{- else -}}
+                                        {{- $reason := cond (eq $error "") "resource not found" $error -}}
+                                        {{- warnf "external.bundle: cannot download %q: %s; it will be loaded separately" $src $reason -}}
+                                    {{- end -}}
+                                {{- end -}}
+                            {{- else if eq .type "style" -}}
+                                {{- warnf "external.bundle: %q is a stylesheet; CSS bundling is not supported yet, so it will be loaded separately" $src -}}
+                            {{- end -}}
+                        {{- end -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{- return (dict "scripts" $scripts "bundled" $bundled) -}}

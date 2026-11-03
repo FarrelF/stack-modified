@@ -12,6 +12,11 @@
 
 {{- $script = resources.Get "ts/main.ts" | js.Build $opts -}}
 {{- $scripts := slice $script -}}
+{{- $externalBundle := partialCached "helper/external-bundle" . "external-bundle" -}}
+{{- range $externalBundle.scripts -}}
+    {{- /* External scripts with bundle = true are concatenated before custom.ts. */ -}}
+    {{- $scripts = $scripts | append . -}}
+{{- end -}}
 {{- with resources.Get "ts/custom.ts" -}}
     {{/* Place your custom script in HUGO_SITE_FOLDER/assets/ts/custom.ts */}}
     {{- $customScript := . | js.Build (dict "targetPath" "js/custom.js") -}}

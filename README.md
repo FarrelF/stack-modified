@@ -57,7 +57,7 @@ Hint sengaja tidak memakai atribut Goldmark `{hint="text"}` karena itu memerluka
 
 Tema ini menyediakan dukungan opsional untuk [WebMCP](https://developer.chrome.com/docs/ai/webmcp), API eksperimental yang memungkinkan agen peramban menemukan dan memanggil fitur situs melalui `document.modelContext`.
 
-Fitur ini nonaktif secara bawaan. Aktifkan di konfigurasi situs:
+Fitur ini nonaktif secara bawaan. Aktifkan di konfigurasi situs (`config/params.toml`):
 
 ```toml
 [webmcp]
@@ -78,6 +78,38 @@ Jika halaman pencarian tidak memakai _layout_ `search`, setel path indeks secara
 enabled = true
 searchIndex = "cari/index.json"
 ```
+
+## Penggabungan Skrip Eksternal
+
+Tema ini dapat menggabungkan skrip JavaScript eksternal yang dideklarasikan di [`data/external.toml`](data/external.toml) ke dalam bundel `main.js`, sehingga tidak ada permintaan HTTP terpisah untuk skrip tersebut. Fitur ini nonaktif secara bawaan dan baru mendukung JavaScript, CSS belum dapat digabung.
+
+Aktifkan di konfigurasi situs (`config/params.toml`):
+
+```toml
+[external]
+bundle = true
+verifyIntegrity = true # opsional, bawaan true
+```
+
+Lalu tandai entri yang ingin digabung di `data/external.toml`:
+
+```toml
+Twemoji = [
+    { src = "https://cdn.jsdelivr.net/npm/@twemoji/api@17.0.3/dist/twemoji.min.js", integrity = "sha512-...", type = "script", bundle = true }
+]
+```
+
+Perilaku yang perlu diketahui:
+
+- `integrity` bersifat opsional. Jika ada dan `verifyIntegrity = true`, hash diverifikasi saat build, ketidakcocokan menggagalkan build. Tanpa `integrity`, skrip tetap digabung tanpa verifikasi. Setel `verifyIntegrity = false` untuk melewati verifikasi meskipun `integrity` dideklarasikan.
+- Entri yang gagal diunduh akan menghasilkan peringatan dan tetap dimuat sebagai permintaan terpisah.
+- `defer` dan `async` pada entri tidak lagi berlaku setelah digabung, semuanya mengikuti `main.js` yang memakai `defer`.
+- `inline = true` pada entri atau `script.inlineScript = true` membuat bundling dilewati dengan peringatan.
+- Skrip ESM seperti Artalk dan PhotoSwipe tidak didukung karena tidak dapat digabung ke `main.js` klasik.
+- `bundle = true` pada `type = "style"` belum didukung dan hanya menghasilkan peringatan.
+- Skrip yang digabung ditempatkan setelah skrip tema dan sebelum `custom.ts`, sehingga `custom.ts` dapat memakai global seperti `twemoji`.
+- Karena `main.js` dipakai di semua halaman, skrip yang ditandai `bundle = true` akan dimuat di setiap halaman. Tandai hanya resource yang memang ingin selalu dimuat.
+- Build memerlukan akses jaringan saat cache Hugo masih kosong.
 
 ## Cara Kontribusi
 Jika Anda ingin mengubah kode sumber untuk memodifikasi tema ini, pertama-tama pastikan bahwa Anda telah mempelajari struktur direktori Hugo.
