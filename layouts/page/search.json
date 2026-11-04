@@ -2,6 +2,8 @@
 {{- $result := slice -}}
 {{- $ImageURL := "" -}}
 {{- $formatConfig := partial "helper/image-processing-config.html" . -}}
+{{- $searchWidth := $formatConfig.searchWidth -}}
+{{- $searchHeight := $formatConfig.searchHeight -}}
 
 {{- range $pages -}}
     {{- $data := dict
@@ -17,22 +19,35 @@
 
     {{- $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) -}}
     {{- if $image -}}
+        {{- $searchAnchor := .Params.imageAnchor | default $formatConfig.searchAnchor -}}
+        {{- $searchMode := lower (.Params.imageMode | default "") -}}
+        {{- $searchOp := "Fill" -}}
+        {{- if in (slice "fit" "height") $searchMode -}}{{- $searchOp = "Fit" -}}{{- end -}}
         {{- if $.Page.Site.Params.CDN.Images.URL -}}
             {{- $ImageURL = $.Page.Site.Params.CDN.Images.URL -}}
         {{- end -}}
         {{- $imagePermalink := "" -}}
         {{- with $image.Resource -}}
             {{- if reflect.IsImageResourceProcessable . -}}
-                {{- $best := .Fill "120x120" -}}
+                {{- $best := .Fill (printf "%dx%d %s" $searchWidth $searchHeight $searchAnchor) -}}
+                {{- if eq $searchOp "Fit" -}}
+                    {{- $best = .Fit (printf "%dx%d" $searchWidth $searchHeight) -}}
+                {{- end -}}
                 {{- $subType := .MediaType.SubType -}}
                 {{- if and $formatConfig.webpEnabled (ne $subType "webp") -}}
-                    {{- $webp := .Fill (printf "120x120 webp q%d" $formatConfig.webpQuality) -}}
+                    {{- $webp := .Fill (printf "%dx%d %s webp q%d" $searchWidth $searchHeight $searchAnchor $formatConfig.webpQuality) -}}
+                    {{- if eq $searchOp "Fit" -}}
+                        {{- $webp = .Fit (printf "%dx%d webp q%d" $searchWidth $searchHeight $formatConfig.webpQuality) -}}
+                    {{- end -}}
                     {{- if lt (len $webp.Content) (len $best.Content) -}}
                         {{- $best = $webp -}}
                     {{- end -}}
                 {{- end -}}
                 {{- if and $formatConfig.avifEnabled (ne $subType "avif") (ne $subType "gif") -}}
-                    {{- $avif := .Fill (printf "120x120 avif q%d" $formatConfig.avifQuality) -}}
+                    {{- $avif := .Fill (printf "%dx%d %s avif q%d" $searchWidth $searchHeight $searchAnchor $formatConfig.avifQuality) -}}
+                    {{- if eq $searchOp "Fit" -}}
+                        {{- $avif = .Fit (printf "%dx%d avif q%d" $searchWidth $searchHeight $formatConfig.avifQuality) -}}
+                    {{- end -}}
                     {{- if lt (len $avif.Content) (len $best.Content) -}}
                         {{- $best = $avif -}}
                     {{- end -}}

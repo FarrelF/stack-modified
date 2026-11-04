@@ -24,6 +24,12 @@
                 width: 100%;
                 height: var(--article-image-height);
                 object-fit: cover;
+                object-position: var(--article-image-position, center);
+
+                &.image-contain {
+                    object-fit: contain;
+                    background-color: var(--card-background);
+                }
             }
         }
     }
@@ -164,6 +170,18 @@
                 width: var(--image-size);
                 height: var(--image-size);
                 object-fit: cover;
+                object-position: var(--article-image-position, center);
+
+                &.image-fit {
+                    object-fit: contain;
+                }
+
+                &.image-height {
+                    width: auto;
+                    height: var(--image-size);
+                    max-width: var(--image-max-width, calc(var(--image-size) * 2));
+                    object-fit: contain;
+                }
             }
         }
         
@@ -210,6 +228,11 @@
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
+                object-position: var(--article-image-position, center);
+
+                &.image-fit {
+                    object-fit: contain;
+                }
             }
         }
 

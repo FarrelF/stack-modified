@@ -1,9 +1,11 @@
 {{- /*
 Params:
     Resource: Hugo image resource object (Optional, for processing)
-    Width: Image width (Required)
-    Height: Image height (Required)
+    Width: Image width (Required for fill/fit)
+    Height: Image height (Required for fill/fit/height)
     Resize: Whether to perform resize (Optional, default: false)
+    Mode: fill (default), fit, or height
+    Anchor: Crop anchor for fill (Optional, default: Smart)
     Hint: WebP/AVIF content hint (Optional)
     Attributes: Map of HTML attributes for the <img> tag
 */ -}}
@@ -12,15 +14,30 @@ Params:
 {{- $width := .Width -}}
 {{- $height := .Height -}}
 {{- $resize := .Resize -}}
+{{- $mode := lower (.Mode | default "fill") -}}
+{{- $anchor := .Anchor -}}
 {{- $hint := .Hint -}}
 {{- $attributes := .Attributes | default dict -}}
 
-{{- if and $resize $resource (reflect.IsImageResourceProcessable $resource) $width $height -}}
+{{- $targetWidth := $width -}}
+{{- $targetHeight := $height -}}
+{{- if and $resource (reflect.IsImageResourceProcessable $resource) -}}
+    {{- if and $targetWidth (gt $targetWidth $resource.Width) -}}{{- $targetWidth = $resource.Width -}}{{- end -}}
+    {{- if and $targetHeight (gt $targetHeight $resource.Height) -}}{{- $targetHeight = $resource.Height -}}{{- end -}}
+{{- end -}}
+
+{{- if ne $mode "fill" -}}
+    {{- $class := printf "%s image-%s" (index $attributes "class" | default "") $mode -}}
+    {{- $attributes = merge $attributes (dict "class" (strings.TrimSpace $class)) -}}
+{{- end -}}
+
+{{- if and $resize $resource (reflect.IsImageResourceProcessable $resource) $targetWidth $targetHeight -}}
     {{ partial "helper/picture.html" (dict
         "Resource" $resource
-        "Mode" "fill"
-        "Width" $width
-        "Height" $height
+        "Mode" $mode
+        "Width" $targetWidth
+        "Height" $targetHeight
+        "Anchor" $anchor
         "Scales" (slice 1 2)
         "MainScale" 1
         "Hint" $hint
@@ -29,16 +46,24 @@ Params:
         "Attributes" $attributes
     ) }}
 {{- else -}}
-    {{- if $resource -}}
-        {{- $ImageURL := "" -}}
-        {{- if and (site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
-            {{- $ImageURL = site.Params.CDN.Images.URL -}}
-        {{- end -}}
-        {{- $attributes = merge $attributes (dict "src" (printf "%s%s" $ImageURL $resource.RelPermalink)) -}}
+    {{- $ImageURL := "" -}}
+    {{- if and (site.Params.CDN.Images.URL) (eq hugo.IsProduction true) -}}
+        {{- $ImageURL = site.Params.CDN.Images.URL -}}
     {{- end -}}
+
+    {{- $emit := false -}}
+    {{- if $resource -}}
+        {{- $attributes = merge $attributes (dict "src" (printf "%s%s" $ImageURL $resource.RelPermalink)) -}}
+        {{- $emit = true -}}
+    {{- else -}}
+        {{- $emit = true -}}
+    {{- end -}}
+
+    {{- if $emit -}}
     <img {{- range $k, $v := $attributes -}}
         {{- if $v -}}
             {{- printf " %s=%q" (lower $k) (printf "%v" $v) | safeHTMLAttr -}}
         {{- end -}}
     {{- end -}}>
+    {{- end -}}
 {{- end -}}

@@ -1,13 +1,15 @@
 {{- /*
 Params:
     Resource:        Hugo image resource object (Optional)
-    Mode:            "resize" (default) or "fill"
+    Mode:            "resize" (default), "fill", "fit", or "height"
     Widths:          Slice of target widths (for "resize")
-    Width:           Base width (for "fill")
-    Height:          Base height (for "fill")
-    Scales:          Slice of scale factors for "fill" (default: slice 1 2)
+    Width:           Base width (for "fill" and "fit")
+    Height:          Base height (for "fill", "fit", and "height")
+    Scales:          Slice of scale factors for "fill"/"fit"/"height" (default: slice 1 2)
     MainWidth:       Width used for the <img> src fallback (for "resize")
-    MainScale:       Scale used for the <img> src fallback (for "fill", default: 1)
+    MainScale:       Scale used for the <img> src fallback (for "fill"/"fit"/"height", default: 1)
+    Anchor:          Crop anchor for "fill": Smart (default), Center, Top, Bottom,
+                     Left, Right, TopLeft, TopRight, BottomLeft, or BottomRight
     OriginalQuality: Optional quality for the original-format variants
     Hint:            Optional WebP/AVIF content hint: photo, picture, drawing, icon, or text
     SetImgSrc:       Whether to set src/width/height on <img> from the main variant (default: false)
@@ -22,10 +24,18 @@ Behaviour:
     - AVIF is only used when it also beats WebP at every requested size.
     - GIF is never converted to AVIF.
     - Loser variants are not published: RelPermalink is only called on winners.
+    - "fill" crops to Width x Height using Anchor; the same anchor is used for
+      the original, WebP, and AVIF variants so the fallback is cropped identically.
+    - "fit" preserves the whole image inside Width x Height (letterboxed by CSS).
+    - "height" preserves the aspect ratio and only constrains the height.
 */ -}}
 
 {{- $resource := .Resource -}}
-{{- $mode := .Mode | default "resize" -}}
+{{- $mode := lower (.Mode | default "resize") -}}
+{{- $validModes := slice "resize" "fill" "fit" "height" -}}
+{{- if not (in $validModes $mode) -}}
+    {{- errorf "Invalid image mode %q; expected one of: %s" $mode (delimit $validModes ", ") -}}
+{{- end -}}
 {{- $widths := .Widths -}}
 {{- $fillWidth := .Width -}}
 {{- $fillHeight := .Height -}}
@@ -33,6 +43,18 @@ Behaviour:
 {{- $mainWidth := .MainWidth -}}
 {{- $mainScale := .MainScale | default 1 -}}
 {{- $originalQuality := .OriginalQuality -}}
+{{- $anchor := "" -}}
+{{- with .Anchor -}}{{- $anchor = strings.TrimSpace (printf "%v" .) -}}{{- end -}}
+{{- $anchorMap := dict "smart" "Smart" "center" "Center" "top" "Top" "bottom" "Bottom" "left" "Left" "right" "Right" "topleft" "TopLeft" "topright" "TopRight" "bottomleft" "BottomLeft" "bottomright" "BottomRight" -}}
+{{- if $anchor -}}
+    {{- $anchor = index $anchorMap (lower $anchor) -}}
+    {{- if not $anchor -}}
+        {{- errorf "Invalid image anchor %q; expected one of: Smart, Center, Top, Bottom, Left, Right, TopLeft, TopRight, BottomLeft, BottomRight" .Anchor -}}
+    {{- end -}}
+{{- else -}}
+    {{- $anchor = "Smart" -}}
+{{- end -}}
+{{- $anchorToken := printf " %s" $anchor -}}
 {{- $hint := "" -}}
 {{- with .Hint -}}{{- $hint = lower (strings.TrimSpace (printf "%v" .)) -}}{{- end -}}
 {{- $validHints := slice "photo" "picture" "drawing" "icon" "text" -}}
@@ -76,18 +98,63 @@ Behaviour:
                 {{- $w := mul $fillWidth $scale -}}
                 {{- $h := mul $fillHeight $scale -}}
                 {{- if and (le $w $resource.Width) (le $h $resource.Height) -}}
-                    {{- $downscale := printf "%dx%d" $w $h -}}
-                    {{- if $originalQuality -}}{{- $downscale = printf "%dx%d q%d" $w $h $originalQuality -}}{{- end -}}
-                    {{- $original := $resource.Fill $downscale -}}
-                    {{- $originalVariants = $originalVariants | append (dict "Res" $original "Descriptor" (printf "%dx" $scale) "Scale" $scale "Width" $w "Height" $h) -}}
+                    {{- $spec := printf "%dx%d%s" $w $h $anchorToken -}}
+                    {{- if $originalQuality -}}{{- $spec = printf "%dx%d%s q%d" $w $h $anchorToken $originalQuality -}}{{- end -}}
+                    {{- $original := $resource.Fill $spec -}}
+                    {{- $originalVariants = $originalVariants | append (dict "Res" $original "Descriptor" (printf "%dx" $scale) "Scale" $scale "Width" $original.Width "Height" $original.Height) -}}
 
                     {{- if $genWebp -}}
-                        {{- $webp := $resource.Fill (printf "%dx%d webp q%d%s" $w $h $webpQuality $hintToken) -}}
+                        {{- $webp := $resource.Fill (printf "%dx%d%s webp q%d%s" $w $h $anchorToken $webpQuality $hintToken) -}}
                         {{- $webpVariants = $webpVariants | append (dict "Res" $webp "Descriptor" (printf "%dx" $scale)) -}}
                     {{- end -}}
 
                     {{- if $genAvif -}}
-                        {{- $avif := $resource.Fill (printf "%dx%d avif q%d%s" $w $h $avifQuality $hintToken) -}}
+                        {{- $avif := $resource.Fill (printf "%dx%d%s avif q%d%s" $w $h $anchorToken $avifQuality $hintToken) -}}
+                        {{- $avifVariants = $avifVariants | append (dict "Res" $avif "Descriptor" (printf "%dx" $scale)) -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+    {{- else if eq $mode "fit" -}}
+        {{- if and $fillWidth $fillHeight -}}
+            {{- range $scale := $scales -}}
+                {{- $w := mul $fillWidth $scale -}}
+                {{- $h := mul $fillHeight $scale -}}
+                {{- if and (le $w $resource.Width) (le $h $resource.Height) -}}
+                    {{- $spec := printf "%dx%d" $w $h -}}
+                    {{- if $originalQuality -}}{{- $spec = printf "%dx%d q%d" $w $h $originalQuality -}}{{- end -}}
+                    {{- $original := $resource.Fit $spec -}}
+                    {{- $originalVariants = $originalVariants | append (dict "Res" $original "Descriptor" (printf "%dx" $scale) "Scale" $scale "Width" $original.Width "Height" $original.Height) -}}
+
+                    {{- if $genWebp -}}
+                        {{- $webp := $resource.Fit (printf "%dx%d webp q%d%s" $w $h $webpQuality $hintToken) -}}
+                        {{- $webpVariants = $webpVariants | append (dict "Res" $webp "Descriptor" (printf "%dx" $scale)) -}}
+                    {{- end -}}
+
+                    {{- if $genAvif -}}
+                        {{- $avif := $resource.Fit (printf "%dx%d avif q%d%s" $w $h $avifQuality $hintToken) -}}
+                        {{- $avifVariants = $avifVariants | append (dict "Res" $avif "Descriptor" (printf "%dx" $scale)) -}}
+                    {{- end -}}
+                {{- end -}}
+            {{- end -}}
+        {{- end -}}
+    {{- else if eq $mode "height" -}}
+        {{- if $fillHeight -}}
+            {{- range $scale := $scales -}}
+                {{- $h := mul $fillHeight $scale -}}
+                {{- if le $h $resource.Height -}}
+                    {{- $spec := printf "x%d" $h -}}
+                    {{- if $originalQuality -}}{{- $spec = printf "x%d q%d" $h $originalQuality -}}{{- end -}}
+                    {{- $original := $resource.Resize $spec -}}
+                    {{- $originalVariants = $originalVariants | append (dict "Res" $original "Descriptor" (printf "%dx" $scale) "Scale" $scale "Width" $original.Width "Height" $original.Height) -}}
+
+                    {{- if $genWebp -}}
+                        {{- $webp := $resource.Resize (printf "x%d webp q%d%s" $h $webpQuality $hintToken) -}}
+                        {{- $webpVariants = $webpVariants | append (dict "Res" $webp "Descriptor" (printf "%dx" $scale)) -}}
+                    {{- end -}}
+
+                    {{- if $genAvif -}}
+                        {{- $avif := $resource.Resize (printf "x%d avif q%d%s" $h $avifQuality $hintToken) -}}
                         {{- $avifVariants = $avifVariants | append (dict "Res" $avif "Descriptor" (printf "%dx" $scale)) -}}
                     {{- end -}}
                 {{- end -}}
@@ -98,7 +165,7 @@ Behaviour:
             {{- $downscale := printf "%dx" $w -}}
             {{- if $originalQuality -}}{{- $downscale = printf "%dx q%d" $w $originalQuality -}}{{- end -}}
             {{- $original := $resource.Resize $downscale -}}
-            {{- $originalVariants = $originalVariants | append (dict "Res" $original "Descriptor" (printf "%dw" $w) "Width" $w) -}}
+            {{- $originalVariants = $originalVariants | append (dict "Res" $original "Descriptor" (printf "%dw" $w) "Width" $original.Width "Height" $original.Height) -}}
 
             {{- if $genWebp -}}
                 {{- $webp := $resource.Resize (printf "%dx webp q%d%s" $w $webpQuality $hintToken) -}}
@@ -159,19 +226,18 @@ Behaviour:
 
 {{- if and $setImgSrc (gt (len $originalVariants) 0) -}}
     {{- $main := index $originalVariants 0 -}}
-    {{- if eq $mode "fill" -}}
+    {{- if in (slice "fill" "fit" "height") $mode -}}
         {{- range $v := $originalVariants -}}
             {{- if eq $v.Scale $mainScale -}}{{- $main = $v -}}{{- end -}}
         {{- end -}}
-        {{- $imgAttributes = merge $imgAttributes (dict "src" (printf "%s%s" $ImageURL $main.Res.RelPermalink) "width" $fillWidth "height" $fillHeight) -}}
-    {{- else -}}
+    {{- else if eq $mode "resize" -}}
         {{- with $mainWidth -}}
             {{- range $v := $originalVariants -}}
                 {{- if eq $v.Width $mainWidth -}}{{- $main = $v -}}{{- end -}}
             {{- end -}}
         {{- end -}}
-        {{- $imgAttributes = merge $imgAttributes (dict "src" (printf "%s%s" $ImageURL $main.Res.RelPermalink) "width" $main.Res.Width "height" $main.Res.Height) -}}
     {{- end -}}
+    {{- $imgAttributes = merge $imgAttributes (dict "src" (printf "%s%s" $ImageURL $main.Res.RelPermalink) "width" $main.Res.Width "height" $main.Res.Height) -}}
 {{- end -}}
 
 {{- if and $setImgSrcset (gt (len $originalVariants) 0) -}}

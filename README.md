@@ -51,7 +51,59 @@ Awalan `hint:` akan dihapus sebelum title dirender. Jika ada tanda `|`, teks set
 
 Rekomendasi: `photo` untuk foto/avatar, `text` atau `drawing` untuk screenshot/teks, dan `icon` atau `text` untuk logo. Jangan set `text` secara global karena ukuran WebP bisa membengkak.
 
-Hint sengaja tidak memakai atribut Goldmark `{hint="text"}` karena itu memerlukan perubahan struktur HTML dan penyesuaian galeri; sintaks title dipilih agar PhotoSwipe tetap aman.
+Hint sengaja tidak memakai atribut Goldmark `{hint="text"}` karena itu memerlukan perubahan struktur HTML dan penyesuaian galeri, jadi sintaks title dipilih agar PhotoSwipe tetap aman.
+
+### Thumbnail, anchor, dan mode
+
+Ukuran thumbnail dan perilaku crop bisa diatur lewat params:
+
+```toml
+[imageProcessing.thumbnail]
+width = 60
+height = 60
+anchor = "Center"   # Smart (default), Center, Top, ...
+mode = "fill"       # fill, fit, height
+
+[imageProcessing.tile]
+width = 250
+height = 150
+anchor = "Center"
+mode = "fill"
+
+[imageProcessing.search]
+width = 120
+height = 120
+anchor = "Center"
+```
+
+`anchor` cuma dipakai kalau `mode = "fill"` dan nilainya mengikuti anchor Hugo, yaitu `Smart`, `Center`, `Top`, `Bottom`, `Left`, `Right`, `TopLeft`, `TopRight`, `BottomLeft`, dan `BottomRight`. Default tema masih `Smart`, tapi sebaiknya pakai `Center` supaya hasil crop selalu sama.
+
+Ada tiga `mode` yang bisa dipakai:
+
+- `fill` memotong gambar sesuai kotak. Ini yang paling rapi untuk foto.
+- `fit` memasukkan seluruh gambar ke dalam kotak, jadi ada ruang kosong di sisi yang tersisa. Cocok untuk logo atau gambar ultrawide di tile dan section.
+- `height` cuma membatasi tinggi, sedangkan lebarnya mengikuti rasio asli dan dibatasi dua kali tinggi. Cocok untuk compact list yang isinya logo. Tile selalu pakai `fill`.
+
+`imageMode` hanya berpengaruh ke thumbnail (compact, tile, section, dan search). Cover besar di home dan single tidak memakai `imageMode`, tapi `imageCoverMode`.
+
+Kalau perlu override per halaman:
+
+```yaml
+Image: cover.webp
+ImageAnchor: Top
+ImageMode: height       # thumbnail: fill, fit, height
+ImagePosition: top      # CSS object-position untuk cover
+ImageCoverMode: contain # cover: cover (default) atau contain
+```
+
+`ImagePosition` dipakai di cover home dan single yang memakai `Resize` dan `object-fit: cover`, bukan di thumbnail. Nilai yang valid adalah `center`, `top`, `bottom`, `left`, `right`, atau persentase.
+
+`ImageCoverMode` juga cuma untuk cover. Kalau diisi `contain`, seluruh gambar akan tampil dengan ruang kosong di sisi yang tersisa, jadi logo tidak terpotong. Defaultnya `cover`, yang memenuhi area dan memotong sisi berlebih. `imageMode: fit` tidak otomatis mengubah cover.
+
+Catatan:
+
+- `publishResources = false` bikin gambar original tidak dipublikasikan, jadi jangan andalkan URL original untuk fallback.
+- `--article-image-height` mengatur tinggi cover di daftar, sedangkan `--article-cover-max-height` mengatur `max-height` cover single (default `50vh`).
 
 ## Dukungan WebMCP
 
@@ -66,8 +118,8 @@ enabled = true
 
 Saat aktif, tema mendaftarkan dua _tool_ baca-saja:
 
-- `search_site(query, limit)` -- mencari memakai indeks pencarian Stack yang sudah ada, yaitu halaman yang memakai `layout: "search"` dan menyediakan output `json`. Hasilnya memuat judul, URL, tanggal, bagian, tag, kategori, dan kutipan singkat.
-- `get_current_article()` -- mengembalikan metadata artikel yang sedang dibuka, meliputi judul, URL kanonis, deskripsi, tanggal terbit dan pembaruan, penulis, bagian, tag, kategori, serta daftar _heading_.
+- `search_site(query, limit)` untuk mencari memakai indeks pencarian Stack yang sudah ada, yaitu halaman yang memakai `layout: "search"` dan menyediakan output `json`. Hasilnya memuat judul, URL, tanggal, bagian, tag, kategori, dan kutipan singkat.
+- `get_current_article()` untuk mengembalikan metadata artikel yang sedang dibuka, meliputi judul, URL kanonis, deskripsi, tanggal terbit dan pembaruan, penulis, bagian, tag, kategori, serta daftar _heading_.
 
 _Tool_ hanya didaftarkan jika `document.modelContext` tersedia, sehingga peramban tanpa dukungan WebMCP tidak terpengaruh. Saat diaktifkan, skrip WebMCP digabungkan ke bundel `main.js` yang sudah ada sehingga tidak menambah permintaan HTTP. Kode _tool_ berada di [`assets/ts/webmcp.ts`](assets/ts/webmcp.ts) dan partial terkait berada di [`layouts/_partials/webmcp/`](layouts/_partials/webmcp/).
 

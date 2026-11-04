@@ -19,6 +19,11 @@
     
             {{- $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) -}}
             {{ if $image }}
+                {{- $formatConfig := partial "helper/image-processing-config.html" . -}}
+                {{- $sectionImageWidth := $formatConfig.thumbnailWidth -}}
+                {{- $sectionImageHeight := $formatConfig.thumbnailHeight -}}
+                {{- $sectionImageAnchor := .Params.imageAnchor | default $formatConfig.thumbnailAnchor -}}
+                {{- $sectionImageMode := .Params.imageMode | default $formatConfig.thumbnailMode -}}
                 {{- $ImageURL := $image.Permalink -}}
                 {{- if not $image.Resource -}}
                     {{- if not (strings.HasPrefix $ImageURL "http") -}}
@@ -28,12 +33,14 @@
                         {{- end -}}
                     {{- end -}}
                 {{- end -}}
-                <div class="section-image">
+                <div class="section-image" style="--section-image-size: {{ $sectionImageWidth }}px">
                     {{ partial "helper/thumbnail-image" (dict 
                         "Resource" $image.Resource
-                        "Width" 60
-                        "Height" 60
+                        "Width" $sectionImageWidth
+                        "Height" $sectionImageHeight
                         "Resize" .Site.Params.ImageProcessing.Thumbnail.Enabled
+                        "Mode" $sectionImageMode
+                        "Anchor" $sectionImageAnchor
                         "Hint" .Params.imageHint
                         "Attributes" (dict
                             "src" $ImageURL

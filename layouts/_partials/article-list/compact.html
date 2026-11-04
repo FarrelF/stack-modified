@@ -1,4 +1,9 @@
-<article>
+{{- $formatConfig := partial "helper/image-processing-config.html" . -}}
+{{- $thumbWidth := $formatConfig.thumbnailWidth -}}
+{{- $thumbHeight := $formatConfig.thumbnailHeight -}}
+{{- $thumbAnchor := .Params.imageAnchor | default $formatConfig.thumbnailAnchor -}}
+{{- $thumbMode := .Params.imageMode | default $formatConfig.thumbnailMode -}}
+<article style="--image-size: {{ $thumbWidth }}px">
     <a href="{{ .RelPermalink }}">
         <div class="article-details">
             <h2 class="article-title">
@@ -45,9 +50,11 @@
         <div class="article-image">
             {{ partial "helper/thumbnail-image" (dict 
                 "Resource" $image.Resource
-                "Width" 60
-                "Height" 60
+                "Width" $thumbWidth
+                "Height" $thumbHeight
                 "Resize" .Site.Params.ImageProcessing.Thumbnail.Enabled
+                "Mode" $thumbMode
+                "Anchor" $thumbAnchor
                 "Hint" .Params.imageHint
                 "Attributes" (dict
                     "src" $ImageURL

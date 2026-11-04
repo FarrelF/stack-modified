@@ -18,6 +18,12 @@
                 "fetchpriority" "high"
                 "sizes" $sizes
             -}}
+            {{- with $Page.Params.imagePosition -}}
+                {{- $attributes = merge $attributes (dict "style" (printf "object-position: %s;" .)) -}}
+            {{- end -}}
+            {{- if eq (lower ($Page.Params.imageCoverMode | default "cover")) "contain" -}}
+                {{- $attributes = merge $attributes (dict "class" "image-contain") -}}
+            {{- end -}}
 
             {{- if and $resource (reflect.IsImageResourceProcessable $resource) -}}
                 {{- $ImageURL := "" -}}

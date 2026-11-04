@@ -1,13 +1,21 @@
+{{- $formatConfig := partial "helper/image-processing-config.html" . -}}
+{{- $tileWidth := $formatConfig.tileWidth -}}
+{{- $tileHeight := $formatConfig.tileHeight -}}
+{{- $tileAnchor := .Params.imageAnchor | default $formatConfig.tileAnchor -}}
+{{- $tileMode := .Params.imageMode | default $formatConfig.tileMode -}}
+{{- if eq $tileMode "height" -}}{{- $tileMode = "fill" -}}{{- end -}}
 {{- $image := partial "helper/image" (dict "Image" .Params.image "Resources" .Resources "Context" .) -}}
-<article class="{{ if $image }}has-image{{ end }}">
+<article class="{{ if $image }}has-image{{ end }}" style="--article-tile-width: {{ $tileWidth }}px; --article-tile-height: {{ $tileHeight }}px;">
     <a href="{{ .RelPermalink }}">
         {{ if $image }}
         <div class="article-image">
             {{ partial "helper/thumbnail-image" (dict
                 "Resource" $image.Resource
-                "Width" 250
-                "Height" 150
+                "Width" $tileWidth
+                "Height" $tileHeight
                 "Resize" .Site.Params.ImageProcessing.Thumbnail.Enabled
+                "Mode" $tileMode
+                "Anchor" $tileAnchor
                 "Hint" .Params.imageHint
                 "Attributes" (dict
                     "src" $image.Permalink

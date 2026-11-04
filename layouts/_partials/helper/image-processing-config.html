@@ -13,12 +13,38 @@ template uses the same values and the same defaults.
     [imageProcessing.content]
     quality = 50
 
-Returns: webpEnabled, webpQuality, avifEnabled, avifQuality, contentQuality
+    [imageProcessing.thumbnail]
+    enabled = true
+    width = 60
+    height = 60
+    anchor = "Smart"
+    mode = "fill"       # fill, fit, or height
+
+    [imageProcessing.tile]
+    width = 250
+    height = 150
+    anchor = "Smart"
+    mode = "fill"
+
+    [imageProcessing.search]
+    width = 120
+    height = 120
+    anchor = "Smart"
+
+Returns: webpEnabled, webpQuality, avifEnabled, avifQuality, contentQuality,
+         thumbnailWidth, thumbnailHeight, thumbnailAnchor, thumbnailMode,
+         tileWidth, tileHeight, tileAnchor, tileMode,
+         searchWidth, searchHeight, searchAnchor
 
 The built-in defaults (WebP q75, AVIF q50, content fallback q50) are only used
 when the matching parameter is absent, so the theme keeps working without extra
 configuration. `isset` is used instead of `default` because `default` treats
 `false` as an empty value, which would make `enabled = false` unusable.
+
+The anchor defaults to Smart for backward compatibility. Set it to Center (or
+any other Hugo anchor) to make cropping deterministic. The mode defaults to
+fill; fit preserves the whole image with letterboxing, and height keeps the
+source aspect ratio.
 */ -}}
 
 {{- $webpEnabled := true -}}
@@ -40,10 +66,52 @@ configuration. `isset` is used instead of `default` because `default` treats
     {{- if isset . "quality" -}}{{- $contentQuality = .quality -}}{{- end -}}
 {{- end -}}
 
+{{- $thumbnailWidth := 60 -}}
+{{- $thumbnailHeight := 60 -}}
+{{- $thumbnailAnchor := "Smart" -}}
+{{- $thumbnailMode := "fill" -}}
+{{- with site.Params.imageProcessing.thumbnail -}}
+    {{- if isset . "width" -}}{{- $thumbnailWidth = .width -}}{{- end -}}
+    {{- if isset . "height" -}}{{- $thumbnailHeight = .height -}}{{- end -}}
+    {{- if isset . "anchor" -}}{{- $thumbnailAnchor = .anchor -}}{{- end -}}
+    {{- if isset . "mode" -}}{{- $thumbnailMode = .mode -}}{{- end -}}
+{{- end -}}
+
+{{- $tileWidth := 250 -}}
+{{- $tileHeight := 150 -}}
+{{- $tileAnchor := "Smart" -}}
+{{- $tileMode := "fill" -}}
+{{- with site.Params.imageProcessing.tile -}}
+    {{- if isset . "width" -}}{{- $tileWidth = .width -}}{{- end -}}
+    {{- if isset . "height" -}}{{- $tileHeight = .height -}}{{- end -}}
+    {{- if isset . "anchor" -}}{{- $tileAnchor = .anchor -}}{{- end -}}
+    {{- if isset . "mode" -}}{{- $tileMode = .mode -}}{{- end -}}
+{{- end -}}
+
+{{- $searchWidth := 120 -}}
+{{- $searchHeight := 120 -}}
+{{- $searchAnchor := "Smart" -}}
+{{- with site.Params.imageProcessing.search -}}
+    {{- if isset . "width" -}}{{- $searchWidth = .width -}}{{- end -}}
+    {{- if isset . "height" -}}{{- $searchHeight = .height -}}{{- end -}}
+    {{- if isset . "anchor" -}}{{- $searchAnchor = .anchor -}}{{- end -}}
+{{- end -}}
+
 {{- return (dict
     "webpEnabled" $webpEnabled
     "webpQuality" $webpQuality
     "avifEnabled" $avifEnabled
     "avifQuality" $avifQuality
     "contentQuality" $contentQuality
+    "thumbnailWidth" $thumbnailWidth
+    "thumbnailHeight" $thumbnailHeight
+    "thumbnailAnchor" $thumbnailAnchor
+    "thumbnailMode" $thumbnailMode
+    "tileWidth" $tileWidth
+    "tileHeight" $tileHeight
+    "tileAnchor" $tileAnchor
+    "tileMode" $tileMode
+    "searchWidth" $searchWidth
+    "searchHeight" $searchHeight
+    "searchAnchor" $searchAnchor
 ) -}}

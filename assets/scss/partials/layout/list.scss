@@ -31,9 +31,21 @@
 
     .section-image {
         img {
-            width: 60px;
-            height: 60px;
+            width: var(--section-image-size, 60px);
+            height: var(--section-image-size, 60px);
             object-fit: cover;
+            object-position: var(--article-image-position, center);
+
+            &.image-fit {
+                object-fit: contain;
+            }
+
+            &.image-height {
+                width: auto;
+                height: var(--section-image-size, 60px);
+                max-width: var(--image-max-width, calc(var(--section-image-size, 60px) * 2));
+                object-fit: contain;
+            }
         }
     }
 
