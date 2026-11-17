@@ -19,7 +19,8 @@
             {{- $hint := $Page.Params.imageHint -}}
 
             {{- $ArticleInfo := dict "Title" $Page.Title "Slug" $Page.Slug "RelPermalink" $Page.RelPermalink "Date" $Page.Date -}}
-            {{- $alt := default (printf "Featured image of post %s" $Page.Title) (T "article.featuredImageOf" $ArticleInfo) -}}
+            {{- $defaultAlt := default (printf "Featured image of post %s" $Page.Title) (T "article.featuredImageOf" $ArticleInfo) -}}
+            {{- $alt := $Page.Params.imgAlt | default $defaultAlt -}}
 
             {{- $sizes := "(max-width: 767px) calc(100vw - 30px), (max-width: 1023px) 700px, (max-width: 1279px) 950px, 1232px" -}}
             {{- $attributes := dict
