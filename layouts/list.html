@@ -1,3 +1,12 @@
+{{ define "head" }}
+    {{- /* Issue #1350: only pages that actually render the subsection strip need the wheel handler.
+           Mirrors the strip condition in "main" below: sections are shown unless the section
+           has nothing but subsections. */ -}}
+    {{- $subsections := .Sections -}}
+    {{- if and $subsections (gt (len (.Pages | complement $subsections)) 0) -}}
+        {{- partial "head/subsection-scroll.html" $ -}}
+    {{- end -}}
+{{ end }}
 {{ define "main" }}
     <header>
         <p class="section-title">

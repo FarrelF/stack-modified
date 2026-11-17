@@ -1,0 +1,13 @@
+{{- /*
+    Progressive enhancement for issue #1350: let the wheel scroll the horizontal
+    category/subsection strips. Only loaded on the pages that render a
+    .subsection-list so other pages do not pay for the extra request.
+*/ -}}
+{{- $opts := dict "targetPath" "js/subsection-scroll.js" -}}
+{{- $script := resources.Get "ts/subsectionScroll.ts" | js.Build $opts -}}
+{{- $script = cond hugo.IsProduction ($script | minify) $script | fingerprint (default "sha512" .Site.Params.script.cryptoHash) -}}
+{{- $Permalink := $script.RelPermalink -}}
+{{- if and (.Site.Params.CDN.JS.URL) (eq hugo.IsProduction true) -}}
+    {{- $Permalink = printf "%s%s" .Site.Params.CDN.JS.URL $script.RelPermalink -}}
+{{- end -}}
+<script type="text/javascript" src="{{- $Permalink -}}"{{- if eq .Site.Params.Script.SRIHash true -}} integrity="{{- $script.Data.Integrity -}}"{{- end -}}{{- if eq hugo.IsProduction true -}} crossorigin="anonymous"{{- end -}} defer></script>

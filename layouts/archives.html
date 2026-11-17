@@ -1,4 +1,12 @@
 {{ define "body-class" }}template-archives{{ end }}
+{{ define "head" }}
+    {{- /* Issue #1350: only pages that actually render the category strip need the wheel handler. */ -}}
+    {{- with .Site.GetPage "taxonomyTerm" "categories" -}}
+        {{- with .Pages -}}
+            {{- partial "head/subsection-scroll.html" $ -}}
+        {{- end -}}
+    {{- end -}}
+{{ end }}
 {{ define "main" }}
     <header>
         <h1 class="section-title">{{ .Title | default (T "widget.archives.title") }}</h1>
