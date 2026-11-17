@@ -38,7 +38,10 @@ Untuk gambar unggulan (_featured image_), gunakan parameter `imageHint` di front
 ```yaml
 image: cover.png
 imageHint: text
+imgAlt: Teks alternatif khusus untuk gambar unggulan
 ```
+
+`imgAlt` bersifat opsional dan hanya dipakai untuk gambar unggulan (cover). Jika kosong, teks alternatif memakai terjemahan `article.featuredImageOf` atau fallback `Featured image of post <judul>`.
 
 Untuk gambar di Markdown, titipkan hint pada title gambar:
 
@@ -162,6 +165,20 @@ Perilaku yang perlu diketahui:
 - Skrip yang digabung ditempatkan setelah skrip tema dan sebelum `custom.ts`, sehingga `custom.ts` dapat memakai global seperti `twemoji`.
 - Karena `main.js` dipakai di semua halaman, skrip yang ditandai `bundle = true` akan dimuat di setiap halaman. Tandai hanya resource yang memang ingin selalu dimuat.
 - Build memerlukan akses jaringan saat cache Hugo masih kosong.
+
+## Gulir Roda Vertikal pada Daftar Horizontal
+
+Daftar kategori di halaman arsip dan daftar subbagian di halaman list dirender sebagai strip horizontal (`.subsection-list`). Karena CSS tidak bisa memetakan input roda vertikal menjadi gulir horizontal, tema ini menambahkan _progressive enhancement_ di [`assets/ts/subsectionScroll.ts`](assets/ts/subsectionScroll.ts).
+
+Perilakunya:
+
+- Roda vertikal di atas strip yang masih bisa digulir akan menggeser strip secara horizontal, bukan halaman.
+- Setelah strip mencapai ujung awal atau akhir, event dilepaskan sehingga halaman kembali tergulir normal.
+- Roda horizontal (trackpad) tetap ditangani peramban, begitu pula `Shift` + roda, `Ctrl` + roda, dan kombinasi tombol modifier lain.
+- Strip yang isinya tidak melebihi lebarnya tidak diintersep sama sekali.
+- Gulir sentuh, keyboard, dan _scrollbar_ tetap memakai perilaku bawaan, dan arah RTL ikut didukung.
+
+Skrip ini hanya dimuat di halaman yang benar-benar merender `.subsection-list`, yaitu halaman arsip yang punya kategori dan halaman list yang punya subbagian, sehingga halaman lain tidak menambah permintaan HTTP.
 
 ## Cara Kontribusi
 Jika Anda ingin mengubah kode sumber untuk memodifikasi tema ini, pertama-tama pastikan bahwa Anda telah mempelajari struktur direktori Hugo.
