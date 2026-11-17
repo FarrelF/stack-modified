@@ -1,4 +1,6 @@
 {{ define "main" }}
+    <h1 class="sr-only">{{ .Title | default .Site.Title }}</h1>
+
     {{- $paginator := partial "helper/paginator.html" . -}}
 
     <section class="article-list">

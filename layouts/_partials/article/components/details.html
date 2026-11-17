@@ -21,14 +21,14 @@
             </a>
         </h2>
 
-        {{ with $Page.Params.description }}
-        <h3 class="article-subtitle">
+        {{ with $Page.Description }}
+        <div class="article-subtitle">
             {{ $opts := dict "display" "block" "markup" "markdown" }}
             {{ . | $.Page.RenderString $opts | emojify }}
             {{ if eq $Page.Params.readMore true }}
                 <p><a class="link" href="{{ $Page.RelPermalink }}">{{ T "article.readMore" }}</a></p>
             {{ end }}
-        </h3>
+        </div>
         {{ end }}
     </div>
 

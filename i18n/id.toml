@@ -1,5 +1,7 @@
-toggleMenu = "Tampilkan Menu"
-darkMode   = "Mode Gelap"
+toggleMenu     = "Tampilkan Menu"
+darkMode       = "Mode Gelap"
+skipToContent  = "Lewati ke konten utama"
+selectLanguage = "Pilih bahasa"
 
 [list]
     section = "Bagian"

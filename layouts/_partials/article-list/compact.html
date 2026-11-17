@@ -10,7 +10,7 @@
                 {{- .Title -}}
             </h2>
 
-            {{- $description := .Params.description -}}
+            {{- $description := .Description -}}
             {{- $IsTerm := in .Kind "term" -}}
             {{- if $IsTerm -}}
                 {{- $description = $description | default (T "list.page" (len .Pages)) -}}

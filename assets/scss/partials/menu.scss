@@ -117,7 +117,10 @@
         display: none;
     }
 
-    outline: none;
+    &:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: 2px;
+    }
 
     &.is-active {
 
@@ -211,6 +214,11 @@
             ol {
                 display: flex;
                 padding-left: 0;
+            }
+
+            /* Avoid the list-item box adding phantom scroll height around the toggle button */
+            > ol > li {
+                display: flex;
             }
         }
     }

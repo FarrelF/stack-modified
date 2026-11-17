@@ -46,7 +46,7 @@
             {{- with $authorEmail }}<author>{{ . }}{{ with $authorName }} ({{ . }}){{ end }}</author>{{ end }}
             <guid>{{ .Permalink }}</guid>
             <description>
-                {{- $content := safeHTML (.Params.description | $.Page.RenderString | html) -}}
+                {{- $content := safeHTML (.Description | $.Page.RenderString | html) -}}
                 {{- if .Site.Params.RSSFullContent -}}
                     {{- $content = .Content -}}
                 {{- end -}}

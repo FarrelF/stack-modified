@@ -153,6 +153,7 @@
     .site-name {
         color: var(--accent-color);
         margin: 0;
+        font-weight: bold;
         font-size: 1.6rem;
 
         @include respond(2xl) {
@@ -188,7 +189,12 @@
 }
 
 #dark-mode-toggle {
-    margin-top: auto;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: start;
     color: var(--body-text-color);
     display: flex;
     align-items: center;
@@ -197,6 +203,11 @@
 
     .icon-tabler-toggle-right {
         display: none;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: 2px;
     }
 }
 
